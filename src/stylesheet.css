@@ -1,0 +1,8 @@
+.column-header {
+    -fx-text-alignment: LEFT;
+    -fx-alignment: LEFT;
+}
+#addEntry {
+    -fx-background-image: url('Images/green-plus.png');
+    -fx-background-size: 100% 100%;
+}

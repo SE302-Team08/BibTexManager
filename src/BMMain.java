@@ -19,6 +19,7 @@ public class BMMain extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
 
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("./stylesheet.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("BibTex Manager");
         stage = primaryStage;

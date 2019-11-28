@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
@@ -12,61 +13,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="912.0" prefWidth="1293.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BMMainScreen">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-                  <MenuItem fx:id="createLibraryMenuItem" mnemonicParsing="false" text="Create BibTex Library" />
-                  <MenuItem fx:id="openLibraryMenuItem" mnemonicParsing="false" onAction="#openLibraryMenuItemAction" text="Open BibTex Library" />
-              <MenuItem fx:id="addNewEntryMenuItem" mnemonicParsing="false" text="Add New Entry" />
-                  <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets left="-0.001" />
-         </padding>
-      </MenuBar>
-   </top>
-   <center>
-      <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-        <tabs>
-          <Tab text="untitled">
-               <content>
-                  <TableView fx:id="tableView" onMouseClicked="#rowSelected" prefHeight="582.0" prefWidth="938.0">
-                    <columns>
-                        <TableColumn fx:id="numberColumn" maxWidth="800.0" prefWidth="75.0" text="No." />
-                        <TableColumn fx:id="entryTypeColumn" maxWidth="1500.0" prefWidth="111.0" text="Entry Type" />
-                        <TableColumn fx:id="authorEditorColumn" maxWidth="2000.0" prefWidth="178.0" text="Author/Editor" />
-                        <TableColumn fx:id="titleColumn" maxWidth="7000.0" minWidth="0.0" prefWidth="447.0" text="Title" />
-                        <TableColumn fx:id="yearColumn" maxWidth="1200.0" minWidth="0.0" prefWidth="86.0" text="Year" />
-                        <TableColumn fx:id="journalBookTitleColumn" maxWidth="3000.0" prefWidth="180.0" text="Journal/Book Title" />
-                        <TableColumn fx:id="bibTexKeyColumn" maxWidth="1000.0" prefWidth="215.0" text="BibTex Key" />
-                    </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
-               </content>
-          </Tab>
-        </tabs>
-      </TabPane>
-   </center>
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="912.0" prefWidth="1293.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BMMainScreen">
    <bottom>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
@@ -129,4 +76,56 @@
          </children>
       </VBox>
    </bottom>
+   <center>
+      <TableView id="addButton" fx:id="tableView" onMouseClicked="#rowSelected" prefHeight="582.0" prefWidth="938.0" BorderPane.alignment="CENTER">
+        <columns>
+            <TableColumn fx:id="numberColumn" maxWidth="800.0" prefWidth="75.0" text="No." />
+            <TableColumn fx:id="entryTypeColumn" maxWidth="1500.0" prefWidth="111.0" text="Entry Type" />
+            <TableColumn fx:id="authorEditorColumn" maxWidth="2000.0" prefWidth="178.0" text="Author/Editor" />
+            <TableColumn fx:id="titleColumn" maxWidth="7000.0" minWidth="0.0" prefWidth="447.0" text="Title" />
+            <TableColumn fx:id="yearColumn" maxWidth="1200.0" minWidth="0.0" prefWidth="86.0" text="Year" />
+            <TableColumn fx:id="journalBookTitleColumn" maxWidth="3000.0" prefWidth="180.0" text="Journal/Book Title" />
+            <TableColumn fx:id="bibTexKeyColumn" maxWidth="1000.0" prefWidth="215.0" text="BibTex Key" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </center>
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem fx:id="createLibraryMenuItem" mnemonicParsing="false" text="Create BibTex Library" />
+                        <MenuItem fx:id="openLibraryMenuItem" mnemonicParsing="false" onAction="#openLibraryMenuItemAction" text="Open BibTex Library" />
+                    <MenuItem fx:id="addNewEntryMenuItem" mnemonicParsing="false" text="Add New Entry" />
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+               <padding>
+                  <Insets left="-0.001" />
+               </padding>
+            </MenuBar>
+            <HBox>
+               <children>
+                  <Button mnemonicParsing="false" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
 </BorderPane>
