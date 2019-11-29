@@ -9,10 +9,7 @@ import javafx.scene.layout.GridPane;
 import org.jbibtex.*;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class BMMainScreen implements Initializable, BMFilter {
 //    @FXML private Button createButton;
@@ -38,6 +35,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     private int currentRowIndex = -1;
     private boolean matchFound = false;
     private Collection<BibTeXEntry> entries;
+    private ObservableList<Map> entriesForColumns;
 
 //    public void createNewLibrary() {
 //
@@ -52,51 +50,41 @@ public class BMMainScreen implements Initializable, BMFilter {
 //    }
 
     public void openLibraryMenuItemAction() throws ParseException {
-        titleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
-        authorEditorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
-        journalBookTitleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
-
         parser = new BMParser();
         entries = parser.readBibTexLibrary();
         database = parser.getBibTeXDatabase();
 
-        if (entries != null) {
-            ObservableList<Map> entriesForColumns = FXCollections.observableArrayList();
+        String searchKeyword = "";
 
-            Key numberKey = new Key("No");
+        getEntries(searchKeyword);
 
-            numberColumn.setCellValueFactory(new MapValueFactory<>(numberKey));
-            titleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TITLE));
-
-            entryTypeColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TYPE));
-            authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_AUTHOR));
-
-//        authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_EDITOR));
-            yearColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_YEAR));
-            journalBookTitleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
-
-            bibTexKeyColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_KEY));
-
-            int rowNumber = 1;
-
-            for (BibTeXEntry entry: entries) {
-                Map<Key, Object> tempMap = new HashMap<>();
-                tempMap.put(numberKey, rowNumber);
-                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
-
-                // @@@ IMPORTANT PART @@@
-                // Every field of each entry is mapped as a key, value pair
-                Map<Key, Value> allFields = entry.getFields();
-                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap));
-
-                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
-                entriesForColumns.add(tempMap);
-
-                rowNumber++;
-            }
-
-            tableView.setItems(entriesForColumns);
-        }
+//        if (entries != null) {
+//            entriesForColumns = FXCollections.observableArrayList();
+//
+//            Key numberKey = new Key("No");
+//
+//
+//
+//            int rowNumber = 1;
+//
+//            for (BibTeXEntry entry: entries) {
+//                Map<Key, Object> tempMap = new HashMap<>();
+//                tempMap.put(numberKey, rowNumber);
+//                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
+//
+//                // @@@ IMPORTANT PART @@@
+//                // Every field of each entry is mapped as a key, value pair
+//                Map<Key, Value> allFields = entry.getFields();
+//                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap));
+//
+//                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
+//                entriesForColumns.add(tempMap);
+//
+//                rowNumber++;
+//            }
+//
+//            tableView.setItems(entriesForColumns);
+//        }
     }
 
 //    private Collection<BibTeXEntry> addEntryMapToTableView()
@@ -114,37 +102,38 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map, String filter) {
-        if (filter == null) {
-            if (tableView == null) {
 
+        if (!key.getValue().equals("year")) {
+            map.put(key, value.toUserString());
+            if (value.toUserString().toLowerCase().contains(filter.toLowerCase())) {
+                matchFound = true;
             }
         } else {
-            if (!key.getValue().equals("year")) {
-                map.put(key, value.toUserString());
+            try {
+                map.put(key, Integer.parseInt(value.toUserString()));
                 if (value.toUserString().toLowerCase().contains(filter.toLowerCase())) {
                     matchFound = true;
                 }
-            } else {
-                try {
-                    map.put(key, Integer.parseInt(value.toUserString()));
-                    if (value.toUserString().toLowerCase().contains(filter.toLowerCase())) {
-                        matchFound = true;
-                    }
-                } catch (NumberFormatException e) {
-                    map.put(key, value.toUserString());
-                }
+            } catch (NumberFormatException e) {
+                map.put(key, value.toUserString());
             }
         }
+
     }
 
     public void rowSelected() {
         Map currentRow;
 
         if (!aRowIsSelected) {
-            mainBorderPane.setBottom(entryEditField);
             currentRow = tableView.getSelectionModel().getSelectedItem();
             currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
             aRowIsSelected = true;
+
+            if (currentRow != null) {
+                fillEntryEditField(currentRow.entrySet());
+                mainBorderPane.setBottom(entryEditField);
+            }
+
         } else {
             if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
                 tableView.getSelectionModel().clearSelection();
@@ -153,58 +142,103 @@ public class BMMainScreen implements Initializable, BMFilter {
             } else {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
                 currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+
+                if (currentRow != null)
+                    fillEntryEditField(currentRow.entrySet());
+
             }
         }
     }
 
-    // REFACTOR THIS PLEASE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    public void searchInsideMap() {
-        if (!searchBar.getText().isEmpty()) {
-            String filter = searchBar.getText();
+    private void fillEntryEditField(Set currentRowSet) {
+        Object[] currentRowArray = currentRowSet.toArray();
+        int entryIndex = 0;
 
-            ObservableList<Map> entriesForColumns = FXCollections.observableArrayList();
-
-            Key numberKey = new Key("No");
-
-            int rowNumber = 1;
-
-            if (entries != null) {
-                for (BibTeXEntry entry: entries) {
-                    matchFound = false;
-                    Map<Key, Object> tempMap = new HashMap<>();
-
-
-                    // @@@ IMPORTANT PART @@@
-                    // Every field of each entry is mapped as a key, value pair
-                    Map<Key, Value> allFields = entry.getFields();
-                    allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap, filter));
-
-                    tempMap.put(numberKey, rowNumber);
-                    tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
-                    tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
-
-                    if (entry.getType().toString().toLowerCase().contains(filter.toLowerCase())) {
-                        matchFound = true;
-                    }
-
-                    if (matchFound) {
-                        entriesForColumns.add(tempMap);
-                    }
-
-                    rowNumber++;
-                }
-            }
-            tableView.getItems().clear();
-
-            if (!entriesForColumns.isEmpty()) {
-                tableView.setItems(entriesForColumns);
+        for (int i = 0; i < 5; i++) {
+            String currentElement = currentRowArray[i].toString().toLowerCase();
+            if (currentElement.contains("no=")) {
+                currentElement = currentElement.replace("no=", "");
+                entryIndex = Integer.parseInt(currentElement) - 1;
+                break;
             }
         }
+
+        System.out.println(entryIndex);
+        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_AUTHOR));
+        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
+    }
+
+    // REFACTOR THIS PLEASE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    public void searchInsideMap() {
+        String searchKeyword;
+
+        if (searchBar.getText() == null)
+            searchKeyword = "";
+        else
+            searchKeyword = searchBar.getText();
+
+        getEntries(searchKeyword);
+    }
+
+    private void getEntries(String searchKeyword) {
+        entriesForColumns = FXCollections.observableArrayList();
+
+        Key numberKey = new Key("No");
+
+        int rowNumber = 1;
+
+        if (entries != null) {
+            for (BibTeXEntry entry: entries) {
+                matchFound = false;
+                Map<Key, Object> tempMap = new HashMap<>();
+
+                // @@@ IMPORTANT PART @@@
+                // Every field of each entry is mapped as a key, value pair
+                Map<Key, Value> allFields = entry.getFields();
+                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap, searchKeyword));
+
+                tempMap.put(numberKey, rowNumber);
+                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
+                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
+
+                if (entry.getType().toString().toLowerCase().contains(searchKeyword.toLowerCase())) {
+                    matchFound = true;
+                }
+
+                if (matchFound) {
+                    entriesForColumns.add(tempMap);
+                }
+
+                rowNumber++;
+            }
+        }
+        tableView.getItems().clear();
+
+        if (!entriesForColumns.isEmpty()) {
+            tableView.setItems(entriesForColumns);
+        }
+
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+        titleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
+        authorEditorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
+        journalBookTitleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
+
+        Key numberKey = new Key("No");
+        numberColumn.setCellValueFactory(new MapValueFactory<>(numberKey));
+        titleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TITLE));
+
+        entryTypeColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TYPE));
+        authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_AUTHOR));
+
+//        authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_EDITOR));
+        yearColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_YEAR));
+        journalBookTitleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
+
+        bibTexKeyColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_KEY));
 //        BMConfig config = new BMConfig();
 //        BMFormatter bmFormatter = new BMFormatter();
 //        bmFormatter.addEntryToEntriesMap();
