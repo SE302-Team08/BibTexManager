@@ -37,7 +37,6 @@ public class BMMainScreen implements Initializable, BMFilter {
     private boolean matchFound = false;
     private Collection<BibTeXEntry> entries;
     private ObservableList<Map> entriesForColumns;
-    private BMConfig config;
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
@@ -52,14 +51,12 @@ public class BMMainScreen implements Initializable, BMFilter {
 //
 //    }
 
-    public void openLibrary() throws ParseException {
+    public void openLibrary() {
         parser = new BMParser();
         entries = parser.readBibTexLibrary(null);
         database = parser.getBibTeXDatabase();
 
-        String searchKeyword = "";
-        getEntries(searchKeyword);
-
+        getEntries("");
     }
 
     private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map, String filter) {
@@ -203,12 +200,12 @@ public class BMMainScreen implements Initializable, BMFilter {
         journalBookTitleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
 
         bibTexKeyColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_KEY));
-        config = new BMConfig();
 
+        BMConfig config = new BMConfig();
         Document propsDocument = config.getProps();
-//        System.out.println(propsDocument);
         if (propsDocument != null) {
-            new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
+            entries = new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
+            getEntries("");
         }
 
 //        BMFormatter bmFormatter = new BMFormatter();

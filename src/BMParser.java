@@ -85,7 +85,7 @@ public class BMParser {
 //                System.out.println();
 //            }
                 reader.close();
-                new BMConfig().setProps();
+                new BMConfig().setProps(getFile());
 
                 return entries;
             }

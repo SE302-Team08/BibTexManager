@@ -1,11 +1,7 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class BMMain extends Application {
@@ -18,9 +14,6 @@ public class BMMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
 
-        BMConfig config = new BMConfig();
-        config.setProps();
-
         Scene scene = new Scene(root);
         scene.getStylesheets().add("./stylesheet.css");
         primaryStage.setScene(scene);
@@ -32,6 +25,6 @@ public class BMMain extends Application {
     @Override
     public void stop() {
         BMConfig config = new BMConfig();
-        config.setProps();
+        config.setProps(new BMParser().getFile());
     }
 }

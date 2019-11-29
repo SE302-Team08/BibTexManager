@@ -13,44 +13,52 @@ import java.util.Properties;
 
 public class BMConfig {
     private Properties props;
-    private File file;
+    private File propsFile;
     private OutputStream os;
     private DocumentBuilderFactory documentBuilderFactory;
     private DocumentBuilder documentBuilder;
     private Document propsDocument;
     private NodeList nodeList;
 
-    public void setProps() {
+    public BMConfig() {
+        propsFile = new File("C:\\Users\\oguzs\\IdeaProjects\\PracticeRange\\src\\props.xml");
+        documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setProps(File lastFile) {
         props = new Properties();
-        file = new File("C:\\Users\\oguzs\\IdeaProjects\\PracticeRange\\src\\props.xml");
 
-        File lastOpenedFile = new BMParser().getFile();
-        System.out.println(lastOpenedFile);
-
-        if (lastOpenedFile != null) {
-            props.setProperty("lastOpenedFile", lastOpenedFile.getAbsolutePath());
+        if (lastFile != null) {
+            props.setProperty("lastOpenedFile", lastFile.getAbsolutePath());
             try {
-                os = new FileOutputStream(file);
-                props.storeToXML(os, "WHATATA");
+                os = new FileOutputStream(propsFile);
+                props.storeToXML(os, "User Configuration");
 
-                documentBuilderFactory = DocumentBuilderFactory.newInstance();
-                documentBuilder = documentBuilderFactory.newDocumentBuilder();
-                propsDocument = documentBuilder.parse(file);
+                propsDocument = documentBuilder.parse(propsFile);
 
-
-                nodeList = propsDocument.getElementsByTagName("lastFile");
-                System.out.println(nodeList.item(0).getTextContent());
+                nodeList = propsDocument.getElementsByTagName("entry");
+//                System.out.println(nodeList.item(0).getTextContent());
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             }
         }
     }
 
     public Document getProps() {
+        try {
+            propsDocument = documentBuilder.parse(propsFile);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return propsDocument;
     }
 }
