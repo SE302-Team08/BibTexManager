@@ -25,7 +25,6 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -64,6 +63,16 @@
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </Label>
+                  <Label text="Type" textAlignment="CENTER" GridPane.columnIndex="3">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="3">
+                     <GridPane.margin>
+                        <Insets left="50.0" />
+                     </GridPane.margin>
+                  </ChoiceBox>
                </children>
             </GridPane>
          </children>
@@ -118,7 +127,7 @@
                   <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="75.0" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
                   <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
                   <CheckBox mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Optional Fields" textAlignment="CENTER" />
-                  <HBox prefHeight="37.0" prefWidth="901.0" />
+                  <HBox prefHeight="25.0" prefWidth="869.0" />
                   <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="17.0" text="🔍" textAlignment="CENTER" />
                   <TextField fx:id="searchBar" onKeyPressed="#searchInsideMap" onKeyReleased="#searchInsideMap" onKeyTyped="#searchInsideMap" prefHeight="25.0" prefWidth="215.0" promptText="Search with a keyword" style="-fx-background-radius: 80;" />
                </children>

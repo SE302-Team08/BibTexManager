@@ -56,6 +56,7 @@ public class BMMainScreen implements Initializable, BMFilter {
 
         String searchKeyword = "";
         getEntries(searchKeyword);
+
     }
 
     private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map, String filter) {
@@ -123,6 +124,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         System.out.println(entryIndex);
         System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_AUTHOR));
         System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
+        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_KEY));
     }
 
     public void searchInsideMap() {
@@ -157,9 +159,11 @@ public class BMMainScreen implements Initializable, BMFilter {
                 tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
                 tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
 
-                if (entry.getType().toString().toLowerCase().contains(searchKeyword.toLowerCase())) {
+                if (entry.getType().toString().toLowerCase().contains(searchKeyword.toLowerCase()))
                     matchFound = true;
-                }
+
+                if (entry.getKey().toString().toLowerCase().contains(searchKeyword.toLowerCase()))
+                    matchFound = true;
 
                 if (matchFound) {
                     entriesForColumns.add(tempMap);
