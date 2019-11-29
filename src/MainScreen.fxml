@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
@@ -112,10 +113,12 @@
                   <Insets left="-0.001" />
                </padding>
             </MenuBar>
-            <HBox>
+            <HBox prefHeight="13.0" prefWidth="1293.0">
                <children>
-                  <Button mnemonicParsing="false" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
-                  <HBox prefHeight="25.0" prefWidth="988.0" />
+                  <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="75.0" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
+                  <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
+                  <CheckBox mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Optional Fields" textAlignment="CENTER" />
+                  <HBox prefHeight="37.0" prefWidth="901.0" />
                   <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="17.0" text="🔍" textAlignment="CENTER" />
                   <TextField fx:id="searchBar" onKeyPressed="#searchInsideMap" onKeyReleased="#searchInsideMap" onKeyTyped="#searchInsideMap" prefHeight="25.0" prefWidth="215.0" promptText="Search with a keyword" style="-fx-background-radius: 80;" />
                </children>

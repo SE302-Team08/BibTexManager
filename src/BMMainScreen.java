@@ -55,50 +55,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         database = parser.getBibTeXDatabase();
 
         String searchKeyword = "";
-
         getEntries(searchKeyword);
-
-//        if (entries != null) {
-//            entriesForColumns = FXCollections.observableArrayList();
-//
-//            Key numberKey = new Key("No");
-//
-//
-//
-//            int rowNumber = 1;
-//
-//            for (BibTeXEntry entry: entries) {
-//                Map<Key, Object> tempMap = new HashMap<>();
-//                tempMap.put(numberKey, rowNumber);
-//                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
-//
-//                // @@@ IMPORTANT PART @@@
-//                // Every field of each entry is mapped as a key, value pair
-//                Map<Key, Value> allFields = entry.getFields();
-//                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap));
-//
-//                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
-//                entriesForColumns.add(tempMap);
-//
-//                rowNumber++;
-//            }
-//
-//            tableView.setItems(entriesForColumns);
-//        }
-    }
-
-//    private Collection<BibTeXEntry> addEntryMapToTableView()
-
-    private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map) {
-        if (!key.getValue().equals("year")) {
-            map.put(key, value.toUserString());
-        } else {
-            try {
-                map.put(key, Integer.parseInt(value.toUserString()));
-            } catch (NumberFormatException e) {
-                map.put(key, value.toUserString());
-            }
-        }
     }
 
     private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map, String filter) {
@@ -168,7 +125,6 @@ public class BMMainScreen implements Initializable, BMFilter {
         System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
     }
 
-    // REFACTOR THIS PLEASE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     public void searchInsideMap() {
         String searchKeyword;
 
