@@ -37,11 +37,11 @@ public class BMMainScreen implements Initializable, BMFilter {
     private Collection<BibTeXEntry> entries;
     private ObservableList<Map> entriesForColumns;
 
-//    public void createNewLibrary() {
+//    public void createLibrary() {
 //
 //    }
 //
-//    public void addNewEntryMenuItemAction() {
+//    public void addEntry() {
 //
 //    }
 //
@@ -49,7 +49,7 @@ public class BMMainScreen implements Initializable, BMFilter {
 //
 //    }
 
-    public void openLibraryMenuItemAction() throws ParseException {
+    public void openLibrary() throws ParseException {
         parser = new BMParser();
         entries = parser.readBibTexLibrary();
         database = parser.getBibTeXDatabase();
