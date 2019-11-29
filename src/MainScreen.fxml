@@ -35,7 +35,7 @@
                <children>
                   <TextArea prefHeight="200.0" prefWidth="200.0">
                      <GridPane.margin>
-                        <Insets left="50.0" />
+                        <Insets left="80.0" />
                      </GridPane.margin>
                   </TextArea>
                   <Label text="Author" textAlignment="CENTER">
@@ -45,7 +45,7 @@
                   </Label>
                   <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                      <GridPane.margin>
-                        <Insets left="50.0" />
+                        <Insets left="80.0" />
                      </GridPane.margin>
                   </TextArea>
                   <Label text="Title" textAlignment="CENTER" GridPane.rowIndex="1">
@@ -55,7 +55,7 @@
                   </Label>
                   <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
                      <GridPane.margin>
-                        <Insets left="50.0" />
+                        <Insets left="80.0" />
                      </GridPane.margin>
                   </TextArea>
                   <Label layoutX="15.0" layoutY="74.0" text="Year" textAlignment="CENTER" GridPane.rowIndex="2">
@@ -63,16 +63,116 @@
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label text="Type" textAlignment="CENTER" GridPane.columnIndex="3">
+                  <TextArea layoutX="60.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="3">
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                      <GridPane.margin>
-                        <Insets left="50.0" />
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="2">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Label" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
+                     </GridPane.margin>
+                  </TextArea>
+                  <Label text="Comment" GridPane.columnIndex="3">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="80.0" />
                      </GridPane.margin>
                   </ChoiceBox>
+                  <Label text="Type" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="5.0" />
+                     </GridPane.margin>
+                  </Label>
                </children>
             </GridPane>
          </children>
@@ -126,7 +226,7 @@
                <children>
                   <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="75.0" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
                   <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
-                  <CheckBox mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Optional Fields" textAlignment="CENTER" />
+                  <CheckBox fx:id="optionalFields" mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="Optional Fields" textAlignment="CENTER" />
                   <HBox prefHeight="25.0" prefWidth="869.0" />
                   <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="17.0" text="🔍" textAlignment="CENTER" />
                   <TextField fx:id="searchBar" onKeyPressed="#searchInsideMap" onKeyReleased="#searchInsideMap" onKeyTyped="#searchInsideMap" prefHeight="25.0" prefWidth="215.0" promptText="Search with a keyword" style="-fx-background-radius: 80;" />

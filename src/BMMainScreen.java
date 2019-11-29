@@ -7,6 +7,7 @@ import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.jbibtex.*;
+import org.w3c.dom.Document;
 
 import java.net.URL;
 import java.util.*;
@@ -36,6 +37,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     private boolean matchFound = false;
     private Collection<BibTeXEntry> entries;
     private ObservableList<Map> entriesForColumns;
+    private BMConfig config;
+    public static CheckBox optionalFields;
 
 //    public void createLibrary() {
 //
@@ -51,7 +54,7 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     public void openLibrary() throws ParseException {
         parser = new BMParser();
-        entries = parser.readBibTexLibrary();
+        entries = parser.readBibTexLibrary(null);
         database = parser.getBibTeXDatabase();
 
         String searchKeyword = "";
@@ -183,6 +186,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+
         titleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
         authorEditorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
         journalBookTitleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
@@ -199,7 +203,14 @@ public class BMMainScreen implements Initializable, BMFilter {
         journalBookTitleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
 
         bibTexKeyColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_KEY));
-//        BMConfig config = new BMConfig();
+        config = new BMConfig();
+
+        Document propsDocument = config.getProps();
+//        System.out.println(propsDocument);
+        if (propsDocument != null) {
+            new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
+        }
+
 //        BMFormatter bmFormatter = new BMFormatter();
 //        bmFormatter.addEntryToEntriesMap();
     }

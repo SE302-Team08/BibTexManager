@@ -19,20 +19,20 @@ public class BMParser {
     private Collection<BibTeXEntry> entries;
 
 
-    public Collection readBibTexLibrary() throws ParseException {
+    public Collection readBibTexLibrary(String filePath) {
 
         try {
             // A file with the exact location of the bib file is created. The location is stored in bibFilePath
-            fileChooser = new FileChooser();
-            fileChooser.setTitle("Open BibTex Library");
+            if (filePath == null) {
+                fileChooser = new FileChooser();
+                fileChooser.setTitle("Open BibTex Library");
 
-            file = fileChooser.showOpenDialog(BMMain.stage);
+                file = fileChooser.showOpenDialog(BMMain.stage);
+            } else {
+                file = new File(filePath);
+            }
 
             if (file != null) {
-
-                System.out.println(file.getParent());
-
-
                 // A reader created to read the contents of the bib file.
                 reader = new BufferedReader(
                         // Just passing the file into the reader makes the reader have all the contents of the file
@@ -85,6 +85,8 @@ public class BMParser {
 //                System.out.println();
 //            }
                 reader.close();
+                new BMConfig().setProps();
+
                 return entries;
             }
 
@@ -104,5 +106,9 @@ public class BMParser {
 
     public BibTeXDatabase getBibTeXDatabase() {
         return bibTeXDatabase;
+    }
+
+    public File getFile() {
+        return file;
     }
 }

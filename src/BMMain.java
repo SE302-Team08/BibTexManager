@@ -18,11 +18,20 @@ public class BMMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
 
+        BMConfig config = new BMConfig();
+        config.setProps();
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("./stylesheet.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("BibTex Manager");
         stage = primaryStage;
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() {
+        BMConfig config = new BMConfig();
+        config.setProps();
     }
 }
