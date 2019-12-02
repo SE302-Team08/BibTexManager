@@ -121,10 +121,13 @@ public class BMMainScreen implements Initializable, BMFilter {
             }
         }
 
-        System.out.println(entryIndex);
-        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_AUTHOR));
-        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
-        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_KEY));
+//        System.out.println(entryIndex);
+        BMEditEntry bmEditEntry = new BMEditEntry();
+        bmEditEntry.fillEntryEditFields(entriesForColumns.get(entryIndex), entryEditField);
+//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_AUTHOR));
+//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
+//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_KEY));
+//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TYPE));
     }
 
     public void searchInsideMap() {
