@@ -183,6 +183,10 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     }
 
+    public void optionalFieldsSelected() {
+        optionalFields.setSelected(!optionalFields.isSelected());
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
@@ -210,6 +214,8 @@ public class BMMainScreen implements Initializable, BMFilter {
             entries = new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
             getEntries("");
         }
+
+        optionalFields = new CheckBox();
 
 //        BMFormatter bmFormatter = new BMFormatter();
 //        bmFormatter.addEntryToEntriesMap();

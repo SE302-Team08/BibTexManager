@@ -84,6 +84,22 @@ public class BMEditEntry {
             label.setText(typeFields[i]);
         }
 
+        int showUntil;
+        if (!BMMainScreen.optionalFields.isSelected()) {
+            showUntil = Integer.parseInt(typeFields[0]) * 2;
+            j = showUntil;
+        } else {
+            showUntil = (Integer.parseInt(typeFields[0]) + Integer.parseInt(typeFields[1])) * 2;
+            j = showUntil;
+            for (int i = 0; i < showUntil; ) {
+                TextArea textArea = (TextArea) editField.getChildren().get(i++);
+                Label label = (Label) editField.getChildren().get(i++);
+
+                textArea.setVisible(true);
+                label.setVisible(true);
+            }
+        }
+
         for (int i = j; i < 26; ) {
             TextArea textArea = (TextArea) editField.getChildren().get(i++);
             Label label = (Label) editField.getChildren().get(i++);
