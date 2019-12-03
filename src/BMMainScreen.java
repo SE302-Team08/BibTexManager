@@ -180,6 +180,7 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     public void optionalFieldsSelected() {
         optionalFields.setSelected(!optionalFields.isSelected());
+        fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
     }
 
     @Override
