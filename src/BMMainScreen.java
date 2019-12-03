@@ -79,57 +79,6 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     }
 
-    public void rowSelected() {
-        Map currentRow;
-
-        if (!aRowIsSelected) {
-            currentRow = tableView.getSelectionModel().getSelectedItem();
-            currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
-            aRowIsSelected = true;
-
-            if (currentRow != null) {
-                fillEntryEditField(currentRow.entrySet());
-                mainBorderPane.setBottom(entryEditField);
-            }
-
-        } else {
-            if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
-                tableView.getSelectionModel().clearSelection();
-                mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
-                aRowIsSelected = false;
-            } else {
-                currentRow = tableView.getSelectionModel().getSelectedItem();
-                currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
-
-                if (currentRow != null)
-                    fillEntryEditField(currentRow.entrySet());
-
-            }
-        }
-    }
-
-    private void fillEntryEditField(Set currentRowSet) {
-        Object[] currentRowArray = currentRowSet.toArray();
-        int entryIndex = 0;
-
-        for (int i = 0; i < 5; i++) {
-            String currentElement = currentRowArray[i].toString().toLowerCase();
-            if (currentElement.contains("no=")) {
-                currentElement = currentElement.replace("no=", "");
-                entryIndex = Integer.parseInt(currentElement) - 1;
-                break;
-            }
-        }
-
-//        System.out.println(entryIndex);
-        BMEditEntry bmEditEntry = new BMEditEntry();
-        bmEditEntry.fillEntryEditFields(entriesForColumns.get(entryIndex), entryEditField);
-//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_AUTHOR));
-//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TITLE));
-//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_KEY));
-//        System.out.println(entriesForColumns.get(entryIndex).get(BibTeXEntry.KEY_TYPE));
-    }
-
     public void searchInsideMap() {
         String searchKeyword;
 
@@ -181,6 +130,52 @@ public class BMMainScreen implements Initializable, BMFilter {
             tableView.setItems(entriesForColumns);
         }
 
+    }
+
+    public void rowSelected() {
+        Map currentRow;
+
+        if (!aRowIsSelected) {
+            currentRow = tableView.getSelectionModel().getSelectedItem();
+            currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+            aRowIsSelected = true;
+
+            if (currentRow != null) {
+                fillEntryEditField(currentRow.entrySet());
+                mainBorderPane.setBottom(entryEditField);
+            }
+
+        } else {
+            if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
+                tableView.getSelectionModel().clearSelection();
+                mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+                aRowIsSelected = false;
+            } else {
+                currentRow = tableView.getSelectionModel().getSelectedItem();
+                currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+
+                if (currentRow != null)
+                    fillEntryEditField(currentRow.entrySet());
+
+            }
+        }
+    }
+
+    private void fillEntryEditField(Set currentRowSet) {
+        Object[] currentRowArray = currentRowSet.toArray();
+        int entryIndex = 0;
+
+        for (int i = 0; i < 5; i++) {
+            String currentElement = currentRowArray[i].toString().toLowerCase();
+            if (currentElement.contains("no=")) {
+                currentElement = currentElement.replace("no=", "");
+                entryIndex = Integer.parseInt(currentElement) - 1;
+                break;
+            }
+        }
+
+        BMEditEntry bmEditEntry = new BMEditEntry();
+        bmEditEntry.fillEntryEditFields(entriesForColumns.get(entryIndex), entryEditField);
     }
 
     public void optionalFieldsSelected() {
