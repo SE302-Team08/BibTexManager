@@ -29,14 +29,17 @@ public class BMMainScreen implements Initializable, BMFilter {
     @FXML private TextField searchBar;
     @FXML private BorderPane mainBorderPane;
     @FXML private GridPane entryEditField;
+    @FXML private Button confirmButton;
     private BMParser parser;
 //    private BMFormatter formatter;
     private BibTeXDatabase database;
+    private BMEditEntry bmEditEntry;
     private boolean aRowIsSelected = false;
     private int currentRowIndex = -1;
     private boolean matchFound = false;
     private Collection<BibTeXEntry> entries;
     private ObservableList<Map> entriesForColumns;
+
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
@@ -174,8 +177,14 @@ public class BMMainScreen implements Initializable, BMFilter {
             }
         }
 
-        BMEditEntry bmEditEntry = new BMEditEntry();
-        bmEditEntry.fillEntryEditFields(entriesForColumns.get(entryIndex), entryEditField);
+        bmEditEntry = new BMEditEntry(entryIndex, entriesForColumns.get(entryIndex), entryEditField);
+        bmEditEntry.fillEntryEditFields();
+    }
+
+    public void confirmChanges() {
+        bmEditEntry.changeEntryFields(entriesForColumns);
+//        tableView.getItems().clear();
+        tableView.setItems(entriesForColumns);
     }
 
     public void optionalFieldsSelected() {

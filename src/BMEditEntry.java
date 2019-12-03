@@ -1,3 +1,4 @@
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -7,69 +8,79 @@ import org.jbibtex.Key;
 import java.util.Map;
 
 public class BMEditEntry {
-    public void fillEntryEditFields(Map selectedRow, GridPane editField) {
+    private int selectedIndex;
+    private Map selectedRow;
+    private GridPane editField;
+
+    public BMEditEntry(int selectedIndex, Map selectedRow, GridPane editField) {
+        this.selectedIndex = selectedIndex;
+        this.selectedRow = selectedRow;
+        this.editField = editField;
+    }
+
+    public void fillEntryEditFields() {
         String selectedRowType = selectedRow.get(BibTeXEntry.KEY_TYPE).toString().toLowerCase();
 
         switch (selectedRowType) {
             case "article":
-                fillEntryEditFields(selectedRow, editField, BMEntry.ARTICLE);
+                fillEntryEditFields(BMEntry.ARTICLE);
                 break;
 
             case "book":
-                fillEntryEditFields(selectedRow, editField, BMEntry.BOOK);
+                fillEntryEditFields(BMEntry.BOOK);
                 break;
 
             case "booklet":
-                fillEntryEditFields(selectedRow, editField, BMEntry.BOOKLET);
+                fillEntryEditFields(BMEntry.BOOKLET);
                 break;
 
             case "conference":
-                fillEntryEditFields(selectedRow, editField, BMEntry.CONFERENCE);
+                fillEntryEditFields(BMEntry.CONFERENCE);
                 break;
 
             case "inbook":
-                fillEntryEditFields(selectedRow, editField, BMEntry.INBOOK);
+                fillEntryEditFields(BMEntry.INBOOK);
                 break;
 
             case "incollection":
-                fillEntryEditFields(selectedRow, editField, BMEntry.INCOLLECTION);
+                fillEntryEditFields(BMEntry.INCOLLECTION);
                 break;
 
             case "inproceedings":
-                fillEntryEditFields(selectedRow, editField, BMEntry.INPROCEEDINGS);
+                fillEntryEditFields(BMEntry.INPROCEEDINGS);
                 break;
 
             case "manual":
-                fillEntryEditFields(selectedRow, editField, BMEntry.MANUAL);
+                fillEntryEditFields(BMEntry.MANUAL);
                 break;
 
             case "mastersthesis":
-                fillEntryEditFields(selectedRow, editField, BMEntry.MASTERSTHESIS);
+                fillEntryEditFields(BMEntry.MASTERSTHESIS);
                 break;
 
             case "misc":
-                fillEntryEditFields(selectedRow, editField, BMEntry.MISC);
+                fillEntryEditFields(BMEntry.MISC);
                 break;
 
             case "phdthesis":
-                fillEntryEditFields(selectedRow, editField, BMEntry.PHDTHESIS);
+                fillEntryEditFields(BMEntry.PHDTHESIS);
                 break;
 
             case "proceedings":
-                fillEntryEditFields(selectedRow, editField, BMEntry.PROCEEDINGS);
+                fillEntryEditFields(BMEntry.PROCEEDINGS);
                 break;
 
             case "techreport":
-                fillEntryEditFields(selectedRow, editField, BMEntry.TECHREPORT);
+                fillEntryEditFields(BMEntry.TECHREPORT);
                 break;
 
             case "unpublished":
-                fillEntryEditFields(selectedRow, editField, BMEntry.UNPUBLISHED);
+                fillEntryEditFields(BMEntry.UNPUBLISHED);
                 break;
         }
     }
 
-    private void fillEntryEditFields(Map selectedRow, GridPane editField, String[] typeFields) {
+    private void fillEntryEditFields(String[] typeFields) {
         int j = 0;
         for (int i = 2; i < typeFields.length; i++) {
             if (selectedRow.get(new Key(typeFields[i].toLowerCase())) != null) {
@@ -107,5 +118,25 @@ public class BMEditEntry {
             textArea.setVisible(false);
             label.setVisible(false);
         }
+    }
+
+    public void changeEntryFields(ObservableList<Map> entriesForColumns) {
+        String key;
+        String value;
+        for (int i = 0; i < 26; ) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            key = label.getText().toLowerCase();
+            value = textArea.getText();
+
+            if (value != null && !value.equals("")) {
+                value = value.replace("\n", " ");
+
+                selectedRow.put(new Key(key), value);
+            }
+        }
+
+        entriesForColumns.set(selectedIndex, selectedRow);
     }
 }
