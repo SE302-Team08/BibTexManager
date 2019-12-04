@@ -154,6 +154,8 @@ public class BMEditEntry {
             }
         }
 
+        selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
+
         entriesForColumns.set(selectedIndex, selectedRow);
     }
 }
