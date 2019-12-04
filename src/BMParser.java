@@ -1,14 +1,11 @@
-import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import org.jbibtex.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 public class BMParser {
     private FileChooser fileChooser;
@@ -17,9 +14,11 @@ public class BMParser {
     private BibTeXParser bibTeXParser;
     private BibTeXDatabase bibTeXDatabase;
     private Collection<BibTeXEntry> entries;
+    private List<Map<Key, Object>> entriesList;
 
 
-    public Collection readBibTexLibrary(String filePath) {
+    public List<Map<Key, Object>> readBibTexLibrary(String filePath) {
+        entriesList = new ArrayList<>();
 
         try {
             // A file with the exact location of the bib file is created. The location is stored in bibFilePath
@@ -70,24 +69,12 @@ public class BMParser {
                 // A BibTex Entry collection is created and it includes all the entries within that specific file
                 entries = bibTeXDatabase.getEntries().values();
 
-                // This for loop loops through each entry in the bib file
-//            for (BibTeXEntry entry: entries) {
-//
-//                // @@@ IMPORTANT PART @@@
-//                // Every field of each entry is mapped as a key, value pair
-//                Map<Key, Value> allFields = entry.getFields();
-//                // Type of the entry is printed before each entry
-//                System.out.println("Entry Type: " + entry.getType());
-//                // For each field in an entry we loop through them and get them as key, value pairs and print them.
-//                // author (key) = J. R. R. Tolkien (value)
-//                allFields.forEach((key, value) -> System.out.println("\t" + key + " = " + value.toUserString()));
-//
-//                System.out.println();
 //            }
                 reader.close();
                 new BMConfig().setProps(getFile());
+                getEntries();
 
-                return entries;
+                return entriesList;
             }
 
         } catch (org.jbibtex.ParseException e) {
@@ -100,8 +87,38 @@ public class BMParser {
         return null;
     }
 
-    public Collection<BibTeXEntry> getEntriesMap() {
-        return entries;
+    private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map) {
+        if (!key.getValue().equals("year")) {
+            map.put(key, value.toUserString());
+        } else {
+            try {
+                map.put(key, Integer.parseInt(value.toUserString()));
+            } catch (NumberFormatException e) {
+                map.put(key, value.toUserString());
+            }
+        }
+    }
+
+    private void getEntries() {
+        Key numberKey = new Key("rownumber");
+
+        int rowNumber = 1;
+
+        if (entries != null) {
+            for (BibTeXEntry entry: entries) {
+                Map<Key, Object> tempMap = new HashMap<>();
+                tempMap.put(numberKey, rowNumber);
+
+                Map<Key, Value> allFields = entry.getFields();
+                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap));
+
+                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
+                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
+
+                entriesList.add(tempMap);
+                rowNumber++;
+            }
+        }
     }
 
     public BibTeXDatabase getBibTeXDatabase() {

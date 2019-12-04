@@ -6,19 +6,22 @@ import javafx.scene.layout.GridPane;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
 
+import java.util.List;
 import java.util.Map;
 
 public class BMEditEntry {
     private int selectedIndex;
-    private Map selectedRow;
+    private List<Map<Key, Object>> entries;
     private GridPane editField;
     private ChoiceBox entryType;
+    private Map selectedRow;
 
-    public BMEditEntry(int selectedIndex, Map selectedRow, GridPane editField, ChoiceBox entryType) {
+    public BMEditEntry(int selectedIndex, List<Map<Key, Object>> entries, GridPane editField, ChoiceBox entryType) {
         this.selectedIndex = selectedIndex;
-        this.selectedRow = selectedRow;
         this.editField = editField;
         this.entryType = entryType;
+        this.entries = entries;
+        this.selectedRow = entries.get(selectedIndex);
     }
 
     public void fillEntryEditFields() {
@@ -137,9 +140,11 @@ public class BMEditEntry {
         }
     }
 
-    public void changeEntryFields(ObservableList<Map> entriesForColumns) {
+    public void changeEntryFields(ObservableList<Map> entriesObservableList) {
         String key;
         String value;
+        Map entry = entries.get(selectedIndex);
+
         for (int i = 0; i < 26; ) {
             TextArea textArea = (TextArea) editField.getChildren().get(i++);
             Label label = (Label) editField.getChildren().get(i++);
@@ -149,13 +154,13 @@ public class BMEditEntry {
 
             if (value != null && !value.equals("")) {
                 value = value.replace("\n", " ");
-
+                
                 selectedRow.put(new Key(key), value);
             }
         }
 
         selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
 
-        entriesForColumns.set(selectedIndex, selectedRow);
+        entriesObservableList.set(selectedIndex, selectedRow);
     }
 }

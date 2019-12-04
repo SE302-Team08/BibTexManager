@@ -37,9 +37,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     private BMEditEntry bmEditEntry;
     private boolean aRowIsSelected = false;
     private int currentRowIndex = -1;
-    private boolean matchFound = false;
-    private Collection<BibTeXEntry> entries;
-    private ObservableList<Map> entriesForColumns;
+    private List<Map<Key, Object>> entries;
+    private ObservableList<Map> entriesObservableList;
 
     public static CheckBox optionalFields;
 
@@ -60,27 +59,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         entries = parser.readBibTexLibrary(null);
         database = parser.getBibTeXDatabase();
 
-        getEntries("");
-    }
-
-    private void addEntryFieldsIntoMap(Key key, Value value, Map<Key, Object> map, String filter) {
-
-        if (!key.getValue().equals("year")) {
-            map.put(key, value.toUserString());
-            if (value.toUserString().toLowerCase().contains(filter.toLowerCase())) {
-                matchFound = true;
-            }
-        } else {
-            try {
-                map.put(key, Integer.parseInt(value.toUserString()));
-                if (value.toUserString().toLowerCase().contains(filter.toLowerCase())) {
-                    matchFound = true;
-                }
-            } catch (NumberFormatException e) {
-                map.put(key, value.toUserString());
-            }
-        }
-
+        displayEntries("");
     }
 
     public void searchInsideMap() {
@@ -91,49 +70,31 @@ public class BMMainScreen implements Initializable, BMFilter {
         else
             searchKeyword = searchBar.getText();
 
-        getEntries(searchKeyword);
+        displayEntries(searchKeyword);
     }
 
-    private void getEntries(String searchKeyword) {
-        entriesForColumns = FXCollections.observableArrayList();
-
-        Key numberKey = new Key("No");
-
-        int rowNumber = 1;
+    private void displayEntries(String searchKeyword) {
+        entriesObservableList = FXCollections.observableArrayList();
 
         if (entries != null) {
-            for (BibTeXEntry entry: entries) {
-                matchFound = false;
-                Map<Key, Object> tempMap = new HashMap<>();
+            if(searchKeyword.length() > 0) {
+                for (Map<Key, Object> entryMap: entries) {
+                    for (Key key: entryMap.keySet()) {
+                        if (entryMap.get(key).toString().toLowerCase().contains(searchKeyword.toLowerCase())) {
+                            entriesObservableList.add(entryMap);
+                        }
+                    }
 
-                // @@@ IMPORTANT PART @@@
-                // Every field of each entry is mapped as a key, value pair
-                Map<Key, Value> allFields = entry.getFields();
-                allFields.forEach((key, value) -> addEntryFieldsIntoMap(key, value, tempMap, searchKeyword));
-
-                tempMap.put(numberKey, rowNumber);
-                tempMap.put(BibTeXEntry.KEY_TYPE, entry.getType().toString());
-                tempMap.put(BibTeXEntry.KEY_KEY, entry.getKey().toString());
-
-                if (entry.getType().toString().toLowerCase().contains(searchKeyword.toLowerCase()))
-                    matchFound = true;
-
-                if (entry.getKey().toString().toLowerCase().contains(searchKeyword.toLowerCase()))
-                    matchFound = true;
-
-                if (matchFound) {
-                    entriesForColumns.add(tempMap);
                 }
+            } else {
+                entriesObservableList.addAll(entries);
+            }
 
-                rowNumber++;
+            tableView.getItems().clear();
+            if (!entriesObservableList.isEmpty()) {
+                tableView.setItems(entriesObservableList);
             }
         }
-        tableView.getItems().clear();
-
-        if (!entriesForColumns.isEmpty()) {
-            tableView.setItems(entriesForColumns);
-        }
-
     }
 
     public void rowSelected() {
@@ -169,23 +130,23 @@ public class BMMainScreen implements Initializable, BMFilter {
         Object[] currentRowArray = currentRowSet.toArray();
         int entryIndex = 0;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < currentRowArray.length; i++) {
             String currentElement = currentRowArray[i].toString().toLowerCase();
-            if (currentElement.contains("no=")) {
-                currentElement = currentElement.replace("no=", "");
+            if (currentElement.contains("rownumber=")) {
+                currentElement = currentElement.replace("rownumber=", "");
                 entryIndex = Integer.parseInt(currentElement) - 1;
                 break;
             }
         }
 
-        bmEditEntry = new BMEditEntry(entryIndex, entriesForColumns.get(entryIndex), entryEditField, entryTypeChoice);
+        bmEditEntry = new BMEditEntry(entryIndex, entries, entryEditField, entryTypeChoice);
+
         bmEditEntry.fillEntryEditFields();
     }
 
     public void confirmChanges() {
-        bmEditEntry.changeEntryFields(entriesForColumns);
-//        tableView.getItems().clear();
-        tableView.setItems(entriesForColumns);
+        bmEditEntry.changeEntryFields(entriesObservableList);
+        tableView.setItems(entriesObservableList);
     }
 
     public void optionalFieldsSelected() {
@@ -203,7 +164,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         authorEditorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
         journalBookTitleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
 
-        Key numberKey = new Key("No");
+        Key numberKey = new Key("rownumber");
         numberColumn.setCellValueFactory(new MapValueFactory<>(numberKey));
         titleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TITLE));
 
@@ -220,7 +181,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         Document propsDocument = config.getProps();
         if (propsDocument != null) {
             entries = new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
-            getEntries("");
+            displayEntries("");
         }
 
         optionalFields = new CheckBox();
