@@ -29,6 +29,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     @FXML private TextField searchBar;
     @FXML private BorderPane mainBorderPane;
     @FXML private GridPane entryEditField;
+    @FXML private ChoiceBox entryTypeChoice;
     @FXML private Button confirmButton;
     private BMParser parser;
 //    private BMFormatter formatter;
@@ -177,7 +178,7 @@ public class BMMainScreen implements Initializable, BMFilter {
             }
         }
 
-        bmEditEntry = new BMEditEntry(entryIndex, entriesForColumns.get(entryIndex), entryEditField);
+        bmEditEntry = new BMEditEntry(entryIndex, entriesForColumns.get(entryIndex), entryEditField, entryTypeChoice);
         bmEditEntry.fillEntryEditFields();
     }
 
@@ -223,6 +224,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         }
 
         optionalFields = new CheckBox();
+        entryTypeChoice.getItems().addAll(FXCollections.observableArrayList(BMEntry.TYPES));
 
 //        BMFormatter bmFormatter = new BMFormatter();
 //        bmFormatter.addEntryToEntriesMap();

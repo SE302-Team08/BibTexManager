@@ -1,4 +1,5 @@
 import javafx.collections.ObservableList;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -11,11 +12,13 @@ public class BMEditEntry {
     private int selectedIndex;
     private Map selectedRow;
     private GridPane editField;
+    private ChoiceBox entryType;
 
-    public BMEditEntry(int selectedIndex, Map selectedRow, GridPane editField) {
+    public BMEditEntry(int selectedIndex, Map selectedRow, GridPane editField, ChoiceBox entryType) {
         this.selectedIndex = selectedIndex;
         this.selectedRow = selectedRow;
         this.editField = editField;
+        this.entryType = entryType;
     }
 
     public void fillEntryEditFields() {
@@ -23,58 +26,72 @@ public class BMEditEntry {
 
         switch (selectedRowType) {
             case "article":
+                entryType.getSelectionModel().select("Article");
                 fillEntryEditFields(BMEntry.ARTICLE);
                 break;
 
             case "book":
+                entryType.getSelectionModel().select("Book");
                 fillEntryEditFields(BMEntry.BOOK);
                 break;
 
             case "booklet":
+                entryType.getSelectionModel().select("Booklet");
                 fillEntryEditFields(BMEntry.BOOKLET);
                 break;
 
             case "conference":
+                entryType.getSelectionModel().select("Conference");
                 fillEntryEditFields(BMEntry.CONFERENCE);
                 break;
 
             case "inbook":
+                entryType.getSelectionModel().select("InBook");
                 fillEntryEditFields(BMEntry.INBOOK);
                 break;
 
             case "incollection":
+                entryType.getSelectionModel().select("InCollection");
                 fillEntryEditFields(BMEntry.INCOLLECTION);
                 break;
 
             case "inproceedings":
+                entryType.getSelectionModel().select("InProceedings");
                 fillEntryEditFields(BMEntry.INPROCEEDINGS);
                 break;
 
             case "manual":
+                entryType.getSelectionModel().select("Manual");
                 fillEntryEditFields(BMEntry.MANUAL);
                 break;
 
             case "mastersthesis":
+                entryType.getSelectionModel().select("MastersThesis");
                 fillEntryEditFields(BMEntry.MASTERSTHESIS);
                 break;
 
             case "misc":
+                entryType.getSelectionModel().select("Misc");
                 fillEntryEditFields(BMEntry.MISC);
                 break;
 
             case "phdthesis":
+                entryType.getSelectionModel().select("PhDThesis");
                 fillEntryEditFields(BMEntry.PHDTHESIS);
                 break;
 
             case "proceedings":
+                entryType.getSelectionModel().select("Proceedings");
                 fillEntryEditFields(BMEntry.PROCEEDINGS);
                 break;
 
             case "techreport":
+                entryType.getSelectionModel().select("TechReport");
                 fillEntryEditFields(BMEntry.TECHREPORT);
                 break;
 
             case "unpublished":
+                entryType.getSelectionModel().select("Unpublished");
                 fillEntryEditFields(BMEntry.UNPUBLISHED);
                 break;
         }
