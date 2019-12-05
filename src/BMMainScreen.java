@@ -119,6 +119,10 @@ public class BMMainScreen implements Initializable, BMFilter {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
                 currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
 
+                if (mainBorderPane.getBottom() == null) {
+                    mainBorderPane.setBottom(entryEditField);
+                }
+
                 if (currentRow != null)
                     fillEntryEditField(currentRow.entrySet());
 
@@ -147,6 +151,10 @@ public class BMMainScreen implements Initializable, BMFilter {
     public void confirmChanges() {
         bmEditEntry.changeEntryFields(entriesObservableList);
         tableView.setItems(entriesObservableList);
+    }
+
+    public void typeChanged() {
+        bmEditEntry.typeChanged();
     }
 
     public void optionalFieldsSelected() {

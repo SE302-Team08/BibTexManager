@@ -14,7 +14,7 @@ public class BMEditEntry {
     private List<Map<Key, Object>> entries;
     private GridPane editField;
     private ChoiceBox entryType;
-    private Map selectedRow;
+    private Map<Key, Object> selectedRow;
 
     public BMEditEntry(int selectedIndex, List<Map<Key, Object>> entries, GridPane editField, ChoiceBox entryType) {
         this.selectedIndex = selectedIndex;
@@ -143,24 +143,43 @@ public class BMEditEntry {
     public void changeEntryFields(ObservableList<Map> entriesObservableList) {
         String key;
         String value;
-        Map entry = entries.get(selectedIndex);
+        String[] neededEntryFields = BMEntry.entryTypesMap.get(entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
 
+        boolean fieldNeeded;
+
+        selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
         for (int i = 0; i < 26; ) {
             TextArea textArea = (TextArea) editField.getChildren().get(i++);
             Label label = (Label) editField.getChildren().get(i++);
 
             key = label.getText().toLowerCase();
             value = textArea.getText();
+            
+            fieldNeeded = doesEntryNeedThisField(key, neededEntryFields);
 
             if (value != null && !value.equals("")) {
                 value = value.replace("\n", " ");
                 
-                selectedRow.put(new Key(key), value);
+                if (fieldNeeded)
+                    selectedRow.put(new Key(key), value);
+
+                else
+                    selectedRow.remove(new Key(key));
             }
         }
 
-        selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
-
         entriesObservableList.set(selectedIndex, selectedRow);
+    }
+
+    private boolean doesEntryNeedThisField(String fieldName, String[] neededEntryFields) {
+        for (String field: neededEntryFields) {
+            if (field.toLowerCase().equals(fieldName))
+                return true;
+        }
+        return false;
+    }
+
+    public void typeChanged() {
+
     }
 }

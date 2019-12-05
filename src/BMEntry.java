@@ -1,4 +1,7 @@
-public class BMEntry {
+import java.util.HashMap;
+import java.util.Map;
+
+public final class BMEntry {
     public static final String[] TYPES = {"Article", "Book", "Booklet", "Conference", "InBook", "InCollection", "InProceedings", "Manual", "MastersThesis", "Misc", "PhDThesis", "Proceedings", "TechReport", "Unpublished"};
     public static final String[] ARTICLE = {"4", "7", "Author", "Title", "Journal", "Year", "Volume", "Number", "Pages", "Month", "Note", "Key", "Comment"};
     public static final String[] BOOK = {"4", "8", "Author/Editor", "Title", "Publisher", "Year", "Volume", "Series", "Address", "Edition", "Month", "Note", "Key", "Comment"};
@@ -14,4 +17,22 @@ public class BMEntry {
     public static final String[] PROCEEDINGS = {"2", "8", "Title", "Year", "Editor", "Publisher", "Organization", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] TECHREPORT = {"4", "7", "Author", "Title", "Institution", "Year", "Type", "Number", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] UNPUBLISHED = {"3", "4", "Author", "Title", "Note", "Month", "Year", "Key", "Comment"};
+    public static final Map<String, String[]> entryTypesMap = new HashMap<String, String[]>() {
+        {
+            put("article", ARTICLE);
+            put("book", BOOK);
+            put("booklet", BOOKLET);
+            put("conference", CONFERENCE);
+            put("inbook", INBOOK);
+            put("incollection", INCOLLECTION);
+            put("inproceedings", INPROCEEDINGS);
+            put("manual", MANUAL);
+            put("mastersthesis", MASTERSTHESIS);
+            put("misc", MISC);
+            put("phdthesis", PHDTHESIS);
+            put("proceedings", PROCEEDINGS);
+            put("techreport", TECHREPORT);
+            put("unpublished", UNPUBLISHED);
+        }
+    };
 }
