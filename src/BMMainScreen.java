@@ -41,6 +41,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     private List<Map<Key, Object>> entries;
     private ObservableList<Map> entriesObservableList;
     private String searchKeyword = "";
+    private Map currentRow;
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
@@ -97,7 +98,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void rowSelected() {
-        Map currentRow;
+        currentRow = null;
 
         if (!aRowIsSelected) {
             currentRow = tableView.getSelectionModel().getSelectedItem();
@@ -150,6 +151,9 @@ public class BMMainScreen implements Initializable, BMFilter {
     public void confirmChanges() {
         bmEditEntry.changeEntryFields(entries);
         displayEntries(searchKeyword);
+        if (currentRow != null) {
+            tableView.getSelectionModel().select(currentRow);
+        }
     }
 
     public void typeChanged() {
@@ -158,6 +162,9 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     public void optionalFieldsSelected() {
         optionalFields.setSelected(!optionalFields.isSelected());
+        if (currentRow != null) {
+            tableView.getSelectionModel().select(currentRow);
+        }
         if (tableView.getSelectionModel().getSelectedItem() != null) {
 //            fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
             typeChanged();
