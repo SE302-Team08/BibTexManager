@@ -40,7 +40,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     private int currentRowIndex = -1;
     private List<Map<Key, Object>> entries;
     private ObservableList<Map> entriesObservableList;
-
+    private String searchKeyword = "";
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
@@ -64,8 +64,6 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void searchInsideMap() {
-        String searchKeyword;
-
         if (searchBar.getText() == null)
             searchKeyword = "";
         else
@@ -150,8 +148,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void confirmChanges() {
-        bmEditEntry.changeEntryFields(entriesObservableList);
-        tableView.setItems(entriesObservableList);
+        bmEditEntry.changeEntryFields(entries);
+        displayEntries(searchKeyword);
     }
 
     public void typeChanged() {

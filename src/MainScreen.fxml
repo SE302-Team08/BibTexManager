@@ -184,10 +184,10 @@
         <columns>
             <TableColumn fx:id="numberColumn" maxWidth="800.0" prefWidth="75.0" text="No." />
             <TableColumn fx:id="entryTypeColumn" maxWidth="1500.0" prefWidth="111.0" text="Entry Type" />
-            <TableColumn fx:id="authorEditorColumn" maxWidth="2000.0" prefWidth="178.0" text="Author/Editor" />
+            <TableColumn fx:id="authorEditorColumn" maxWidth="2000.0" prefWidth="178.0" text="Author" />
             <TableColumn fx:id="titleColumn" maxWidth="7000.0" minWidth="0.0" prefWidth="447.0" text="Title" />
             <TableColumn fx:id="yearColumn" maxWidth="1200.0" minWidth="0.0" prefWidth="86.0" text="Year" />
-            <TableColumn fx:id="journalBookTitleColumn" maxWidth="3000.0" prefWidth="180.0" text="Journal/Book Title" />
+            <TableColumn fx:id="journalBookTitleColumn" maxWidth="3000.0" prefWidth="180.0" text="Journal" />
             <TableColumn fx:id="bibTexKeyColumn" maxWidth="1000.0" prefWidth="215.0" text="BibTex Key" />
         </columns>
          <columnResizePolicy>

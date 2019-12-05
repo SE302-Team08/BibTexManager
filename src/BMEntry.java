@@ -4,10 +4,10 @@ import java.util.Map;
 public final class BMEntry {
     public static final String[] TYPES = {"Article", "Book", "Booklet", "Conference", "InBook", "InCollection", "InProceedings", "Manual", "MastersThesis", "Misc", "PhDThesis", "Proceedings", "TechReport", "Unpublished"};
     public static final String[] ARTICLE = {"4", "7", "Author", "Title", "Journal", "Year", "Volume", "Number", "Pages", "Month", "Note", "Key", "Comment"};
-    public static final String[] BOOK = {"4", "8", "Author/Editor", "Title", "Publisher", "Year", "Volume", "Series", "Address", "Edition", "Month", "Note", "Key", "Comment"};
+    public static final String[] BOOK = {"4", "8", "Author", "Title", "Publisher", "Year", "Volume", "Series", "Address", "Edition", "Month", "Note", "Key", "Comment"};
     public static final String[] BOOKLET = {"1", "8", "Title", "Author", "HowPublished", "Address", "Month", "Year", "Note", "Key", "Comment"};
     public static final String[] CONFERENCE = {"4", "9", "Author", "Title", "Book Title", "Year", "Editor", "Pages", "Organization", "Publisher", "Address", "Month", "Note", "Key", "Comment"};
-    public static final String[] INBOOK = {"5", "8", "Author/Editor", "Title", "Chapter/Pages", "Publisher", "Year", "Volume", "Series", "Address", "Edition", "Month", "Note", "Key", "Comment"};
+    public static final String[] INBOOK = {"5", "8", "Author", "Title", "Pages", "Publisher", "Year", "Volume", "Series", "Address", "Edition", "Month", "Note", "Key", "Comment"};
     public static final String[] INCOLLECTION = {"4", "9", "Author", "Title", "Book Title", "Year", "Editor", "Pages", "Organization", "Publisher", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] INPROCEEDINGS = {"4", "9", "Author", "Title", "Book Title", "Year", "Editor", "Pages", "Organization", "Publisher", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] MANUAL = {"1", "9", "Title", "Author", "Organization", "Address", "Edition", "Month", "Year", "Note", "Key", "Comment"};

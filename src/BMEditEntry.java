@@ -5,7 +5,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
+import org.jbibtex.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -141,7 +143,7 @@ public class BMEditEntry {
         typeChanged();
     }
 
-    public void changeEntryFields(ObservableList<Map> entriesObservableList) {
+    public void changeEntryFields(List<Map<Key, Object>> entries) {
         String key;
         String value;
         String[] neededEntryFields = BMEntry.entryTypesMap.get(entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
@@ -169,7 +171,7 @@ public class BMEditEntry {
             }
         }
 
-        entriesObservableList.set(selectedIndex, selectedRow);
+        entries.set(selectedIndex, selectedRow);
     }
 
     private boolean doesEntryNeedThisField(String fieldName, String[] neededEntryFields) {
