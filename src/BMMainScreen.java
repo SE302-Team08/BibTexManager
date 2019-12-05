@@ -1,3 +1,4 @@
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -160,7 +161,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     public void optionalFieldsSelected() {
         optionalFields.setSelected(!optionalFields.isSelected());
         if (tableView.getSelectionModel().getSelectedItem() != null) {
-            fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
+//            fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
+            typeChanged();
         }
     }
 
@@ -194,6 +196,9 @@ public class BMMainScreen implements Initializable, BMFilter {
 
         optionalFields = new CheckBox();
         entryTypeChoice.getItems().addAll(FXCollections.observableArrayList(BMEntry.TYPES));
+        entryTypeChoice.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 
 //        BMFormatter bmFormatter = new BMFormatter();
 //        bmFormatter.addEntryToEntriesMap();

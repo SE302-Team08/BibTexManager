@@ -101,43 +101,44 @@ public class BMEditEntry {
     }
 
     private void fillEntryEditFields(String[] typeFields) {
-        int j = 0;
-        for (int i = 2; i < typeFields.length; i++) {
-            if (selectedRow.get(new Key(typeFields[i].toLowerCase())) != null) {
-                TextArea textArea = (TextArea) editField.getChildren().get(j++);
-                textArea.setText(selectedRow.get(new Key(typeFields[i].toLowerCase())).toString());
-            } else {
-                TextArea textArea = (TextArea) editField.getChildren().get(j++);
-                textArea.setText("");
-            }
-
-            Label label = (Label) editField.getChildren().get(j++);
-            label.setText(typeFields[i]);
-        }
-
-        int showUntil;
-        if (!BMMainScreen.optionalFields.isSelected()) {
-            showUntil = Integer.parseInt(typeFields[0]) * 2;
-            j = showUntil;
-        } else {
-            showUntil = (Integer.parseInt(typeFields[0]) + Integer.parseInt(typeFields[1])) * 2;
-            j = showUntil;
-            for (int i = 0; i < showUntil; ) {
-                TextArea textArea = (TextArea) editField.getChildren().get(i++);
-                Label label = (Label) editField.getChildren().get(i++);
-
-                textArea.setVisible(true);
-                label.setVisible(true);
-            }
-        }
-
-        for (int i = j; i < 26; ) {
-            TextArea textArea = (TextArea) editField.getChildren().get(i++);
-            Label label = (Label) editField.getChildren().get(i++);
-
-            textArea.setVisible(false);
-            label.setVisible(false);
-        }
+//        int editFieldIndex = 0;
+//        for (int i = 2; i < typeFields.length; i++) {
+//            if (selectedRow.get(new Key(typeFields[i].toLowerCase())) != null) {
+//                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+//                textArea.setText(selectedRow.get(new Key(typeFields[i].toLowerCase())).toString());
+//            } else {
+//                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+//                textArea.setText("");
+//            }
+//
+//            Label label = (Label) editField.getChildren().get(editFieldIndex++);
+//            label.setText(typeFields[i]);
+//        }
+//
+//        int showUntil;
+//        if (!BMMainScreen.optionalFields.isSelected()) {
+//            showUntil = Integer.parseInt(typeFields[0]) * 2;
+//            editFieldIndex = showUntil;
+//        } else {
+//            showUntil = (Integer.parseInt(typeFields[0]) + Integer.parseInt(typeFields[1])) * 2;
+//            editFieldIndex = showUntil;
+//            for (int i = 0; i < showUntil; ) {
+//                TextArea textArea = (TextArea) editField.getChildren().get(i++);
+//                Label label = (Label) editField.getChildren().get(i++);
+//
+//                textArea.setVisible(true);
+//                label.setVisible(true);
+//            }
+//        }
+//
+//        for (int i = editFieldIndex; i < 26; ) {
+//            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+//            Label label = (Label) editField.getChildren().get(i++);
+//
+//            textArea.setVisible(false);
+//            label.setVisible(false);
+//        }
+        typeChanged();
     }
 
     public void changeEntryFields(ObservableList<Map> entriesObservableList) {
@@ -154,7 +155,7 @@ public class BMEditEntry {
 
             key = label.getText().toLowerCase();
             value = textArea.getText();
-            
+
             fieldNeeded = doesEntryNeedThisField(key, neededEntryFields);
 
             if (value != null && !value.equals("")) {
@@ -180,6 +181,44 @@ public class BMEditEntry {
     }
 
     public void typeChanged() {
+        String selectedType = entryType.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
 
+        int showUntil;
+        if (!BMMainScreen.optionalFields.isSelected()) {
+            showUntil = Integer.parseInt(neededEntryFields[0]) * 2;
+        } else {
+            showUntil = (Integer.parseInt(neededEntryFields[0]) + Integer.parseInt(neededEntryFields[1])) * 2;
+        }
+
+        int editFieldIndex = 0;
+        for (int i = 2; i < neededEntryFields.length; i++) {
+            if (selectedRow.get(new Key(neededEntryFields[i].toLowerCase())) != null) {
+                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+                textArea.setText(selectedRow.get(new Key(neededEntryFields[i].toLowerCase())).toString());
+            } else {
+                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+                textArea.setText("");
+            }
+
+            Label label = (Label) editField.getChildren().get(editFieldIndex++);
+            label.setText(neededEntryFields[i]);
+        }
+
+        for (int i = 0; i < showUntil; ) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            textArea.setVisible(true);
+            label.setVisible(true);
+        }
+
+        for (int i = showUntil; i < 26; ) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            textArea.setVisible(false);
+            label.setVisible(false);
+        }
     }
 }
