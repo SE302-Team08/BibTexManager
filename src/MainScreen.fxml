@@ -168,7 +168,7 @@
                         <Insets left="80.0" />
                      </GridPane.margin>
                   </ChoiceBox>
-                  <Label text="Type" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                  <Label text="Entry Type" GridPane.columnIndex="3" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
@@ -225,10 +225,11 @@
             </MenuBar>
             <HBox prefHeight="13.0" prefWidth="1293.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="75.0" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
+                  <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true" />
                   <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
-                  <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" prefWidth="110.0" text="Optional Fields" textAlignment="CENTER" />
-                  <HBox prefWidth="869.0" HBox.hgrow="ALWAYS" />
+                  <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" text="Optional Fields" textAlignment="CENTER" />
+                  <HBox prefHeight="25.0" prefWidth="435.0" HBox.hgrow="ALWAYS" />
                   <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="17.0" text="🔍" textAlignment="CENTER" />
                   <TextField fx:id="searchBar" onKeyPressed="#searchInsideMap" onKeyReleased="#searchInsideMap" onKeyTyped="#searchInsideMap" prefHeight="25.0" prefWidth="215.0" promptText="Search with a keyword" style="-fx-background-radius: 80;" />
                </children>

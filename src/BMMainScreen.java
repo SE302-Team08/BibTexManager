@@ -52,9 +52,17 @@ public class BMMainScreen implements Initializable, BMFilter {
 //
 //    }
 //
-//    public void deleteEntry() {
-//
-//    }
+    public void deleteEntry() {
+        if (aRowIsSelected) {
+            entries.remove(currentRowIndex);
+            int rowNumber = 1;
+            for (Map<Key, Object> entry: entries) {
+                entry.put(new Key("rownumber"), rowNumber++);
+            }
+            displayEntries("");
+            System.out.println(currentRowIndex);
+        }
+    }
 
     public void openLibrary() {
         parser = new BMParser();
