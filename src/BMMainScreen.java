@@ -149,7 +149,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void confirmChanges() {
-        bmEditEntry.changeEntryFields(entries);
+        bmEditEntry.changeEntry(entries);
         displayEntries(searchKeyword);
         if (currentRow != null) {
             tableView.getSelectionModel().select(currentRow);

@@ -1,154 +1,112 @@
-import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
-import org.jbibtex.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class BMEditEntry {
     private int selectedIndex;
-    private List<Map<Key, Object>> entries;
     private GridPane editField;
     private ChoiceBox entryType;
     private Map<Key, Object> selectedRow;
+    private String[] previousEntryFields;
 
     public BMEditEntry(int selectedIndex, List<Map<Key, Object>> entries, GridPane editField, ChoiceBox entryType) {
         this.selectedIndex = selectedIndex;
         this.editField = editField;
         this.entryType = entryType;
-        this.entries = entries;
         this.selectedRow = entries.get(selectedIndex);
+        this.previousEntryFields = new String[15];
     }
 
     public void fillEntryEditFields() {
         String selectedRowType = selectedRow.get(BibTeXEntry.KEY_TYPE).toString().toLowerCase();
+        previousEntryFields = BMEntry.entryTypesMap.get(selectedRowType);
 
         switch (selectedRowType) {
             case "article":
                 entryType.getSelectionModel().select("Article");
-                fillEntryEditFields(BMEntry.ARTICLE);
+                typeChanged();
                 break;
 
             case "book":
                 entryType.getSelectionModel().select("Book");
-                fillEntryEditFields(BMEntry.BOOK);
+                typeChanged();
                 break;
 
             case "booklet":
                 entryType.getSelectionModel().select("Booklet");
-                fillEntryEditFields(BMEntry.BOOKLET);
+                typeChanged();
                 break;
 
             case "conference":
                 entryType.getSelectionModel().select("Conference");
-                fillEntryEditFields(BMEntry.CONFERENCE);
+                typeChanged();
                 break;
 
             case "inbook":
                 entryType.getSelectionModel().select("InBook");
-                fillEntryEditFields(BMEntry.INBOOK);
+                typeChanged();
                 break;
 
             case "incollection":
                 entryType.getSelectionModel().select("InCollection");
-                fillEntryEditFields(BMEntry.INCOLLECTION);
+                typeChanged();
                 break;
 
             case "inproceedings":
                 entryType.getSelectionModel().select("InProceedings");
-                fillEntryEditFields(BMEntry.INPROCEEDINGS);
+                typeChanged();
                 break;
 
             case "manual":
                 entryType.getSelectionModel().select("Manual");
-                fillEntryEditFields(BMEntry.MANUAL);
+                typeChanged();
                 break;
 
             case "mastersthesis":
                 entryType.getSelectionModel().select("MastersThesis");
-                fillEntryEditFields(BMEntry.MASTERSTHESIS);
+                typeChanged();
                 break;
 
             case "misc":
                 entryType.getSelectionModel().select("Misc");
-                fillEntryEditFields(BMEntry.MISC);
+                typeChanged();
                 break;
 
             case "phdthesis":
                 entryType.getSelectionModel().select("PhDThesis");
-                fillEntryEditFields(BMEntry.PHDTHESIS);
+                typeChanged();
                 break;
 
             case "proceedings":
                 entryType.getSelectionModel().select("Proceedings");
-                fillEntryEditFields(BMEntry.PROCEEDINGS);
+                typeChanged();
                 break;
 
             case "techreport":
                 entryType.getSelectionModel().select("TechReport");
-                fillEntryEditFields(BMEntry.TECHREPORT);
+                typeChanged();
                 break;
 
             case "unpublished":
                 entryType.getSelectionModel().select("Unpublished");
-                fillEntryEditFields(BMEntry.UNPUBLISHED);
+                typeChanged();
                 break;
         }
     }
 
-    private void fillEntryEditFields(String[] typeFields) {
-//        int editFieldIndex = 0;
-//        for (int i = 2; i < typeFields.length; i++) {
-//            if (selectedRow.get(new Key(typeFields[i].toLowerCase())) != null) {
-//                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
-//                textArea.setText(selectedRow.get(new Key(typeFields[i].toLowerCase())).toString());
-//            } else {
-//                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
-//                textArea.setText("");
-//            }
-//
-//            Label label = (Label) editField.getChildren().get(editFieldIndex++);
-//            label.setText(typeFields[i]);
-//        }
-//
-//        int showUntil;
-//        if (!BMMainScreen.optionalFields.isSelected()) {
-//            showUntil = Integer.parseInt(typeFields[0]) * 2;
-//            editFieldIndex = showUntil;
-//        } else {
-//            showUntil = (Integer.parseInt(typeFields[0]) + Integer.parseInt(typeFields[1])) * 2;
-//            editFieldIndex = showUntil;
-//            for (int i = 0; i < showUntil; ) {
-//                TextArea textArea = (TextArea) editField.getChildren().get(i++);
-//                Label label = (Label) editField.getChildren().get(i++);
-//
-//                textArea.setVisible(true);
-//                label.setVisible(true);
-//            }
-//        }
-//
-//        for (int i = editFieldIndex; i < 26; ) {
-//            TextArea textArea = (TextArea) editField.getChildren().get(i++);
-//            Label label = (Label) editField.getChildren().get(i++);
-//
-//            textArea.setVisible(false);
-//            label.setVisible(false);
-//        }
-        typeChanged();
-    }
-
-    public void changeEntryFields(List<Map<Key, Object>> entries) {
+    public void changeEntry(List<Map<Key, Object>> entries) {
         String key;
         String value;
-        String[] neededEntryFields = BMEntry.entryTypesMap.get(entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
 
-        boolean fieldNeeded;
+        String selectedType = entryType.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
+        removeUnnecessaryFields(previousEntryFields, neededEntryFields);
 
         selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
         for (int i = 0; i < 26; ) {
@@ -158,28 +116,35 @@ public class BMEditEntry {
             key = label.getText().toLowerCase();
             value = textArea.getText();
 
-            fieldNeeded = doesEntryNeedThisField(key, neededEntryFields);
-
             if (value != null && !value.equals("")) {
                 value = value.replace("\n", " ");
-                
-                if (fieldNeeded)
-                    selectedRow.put(new Key(key), value);
 
-                else
-                    selectedRow.remove(new Key(key));
+                selectedRow.put(new Key(key), value);
             }
         }
 
         entries.set(selectedIndex, selectedRow);
+        previousEntryFields = BMEntry.entryTypesMap.get(selectedType);
     }
 
-    private boolean doesEntryNeedThisField(String fieldName, String[] neededEntryFields) {
-        for (String field: neededEntryFields) {
-            if (field.toLowerCase().equals(fieldName))
-                return true;
+    private void removeUnnecessaryFields(String[] previousEntryFields, String[] neededEntryFields) {
+        boolean fieldNotNeeded = true;
+
+        if (previousEntryFields == null)
+            previousEntryFields = BMEntry.entryTypesMap.get(entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
+
+        for (String previousField: previousEntryFields) {
+            for (String currentField: neededEntryFields) {
+                if (currentField.toLowerCase().equals(previousField)) {
+                    fieldNotNeeded = false;
+                    break;
+                }
+            }
+            if (fieldNotNeeded)
+                selectedRow.remove(new Key(previousField));
+
+            fieldNotNeeded = true;
         }
-        return false;
     }
 
     public void typeChanged() {
