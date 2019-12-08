@@ -21,11 +21,14 @@ public class BMConfig {
     private NodeList nodeList;
 
     public BMConfig() {
-        propsFile = new File("C:\\Users\\oguzs\\IdeaProjects\\PracticeRange\\src\\props.xml");
+        final String dir = System.getProperty("user.dir");
+        propsFile = new File(dir + "/props.xml");
+
         documentBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
+            propsFile.createNewFile();
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException | IOException e) {
             e.printStackTrace();
         }
     }
