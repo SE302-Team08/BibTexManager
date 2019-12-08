@@ -1,5 +1,4 @@
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,19 +11,15 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 public class BMConfig {
-    private Properties props;
     private File propsFile;
-    private OutputStream os;
-    private DocumentBuilderFactory documentBuilderFactory;
     private DocumentBuilder documentBuilder;
     private Document propsDocument;
-    private NodeList nodeList;
 
     public BMConfig() {
         final String dir = System.getProperty("user.dir");
         propsFile = new File(dir + "/props.xml");
 
-        documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
             propsFile.createNewFile();
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -34,21 +29,16 @@ public class BMConfig {
     }
 
     public void setProps(File lastFile) {
-        props = new Properties();
+        Properties props = new Properties();
 
         if (lastFile != null) {
             props.setProperty("lastOpenedFile", lastFile.getAbsolutePath());
             try {
-                os = new FileOutputStream(propsFile);
+                OutputStream os = new FileOutputStream(propsFile);
                 props.storeToXML(os, "User Configuration");
 
                 propsDocument = documentBuilder.parse(propsFile);
-
-                nodeList = propsDocument.getElementsByTagName("entry");
-//                System.out.println(nodeList.item(0).getTextContent());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
+            } catch (IOException | SAXException e) {
                 e.printStackTrace();
             }
         }
@@ -57,9 +47,7 @@ public class BMConfig {
     public Document getProps() {
         try {
             propsDocument = documentBuilder.parse(propsFile);
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | SAXException e) {
             e.printStackTrace();
         }
         return propsDocument;

@@ -57,8 +57,6 @@ public class BMParser {
                         }
                     }
                 };
-//                LaTeXParser laTeXParser = new LaTeXParser();
-//                laTeXParser.parse(filterReader);
 
                 //Database initialized to the parsed version of the reader/file by using the bibTexParser created above.
                 bibTeXDatabase = bibTeXParser.parseFully(reader);

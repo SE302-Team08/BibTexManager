@@ -225,7 +225,7 @@
             </MenuBar>
             <HBox prefHeight="13.0" prefWidth="1293.0">
                <children>
-                  <Button mnemonicParsing="false" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" onAction="#addEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
                   <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true" />
                   <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
                   <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" text="Optional Fields" textAlignment="CENTER" />

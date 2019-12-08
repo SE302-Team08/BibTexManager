@@ -108,7 +108,7 @@ public class BMEditEntry {
         String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
         removeUnnecessaryFields(previousEntryFields, neededEntryFields);
 
-        selectedRow.put(new Key("type"), entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
+        selectedRow.put(new Key("type"), selectedType);
         for (int i = 0; i < 26; ) {
             TextArea textArea = (TextArea) editField.getChildren().get(i++);
             Label label = (Label) editField.getChildren().get(i++);

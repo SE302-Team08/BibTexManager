@@ -42,23 +42,29 @@ public class BMMainScreen implements Initializable, BMFilter {
     private ObservableList<Map> entriesObservableList;
     private String searchKeyword = "";
     private Map currentRow;
+    private boolean keepLastDeletedEntryFields = false;
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
 //
 //    }
 //
-//    public void addEntry() {
-//
-//    }
-//
+    public void addEntry() {
+        confirmButton.setText("Add");
+
+        BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoice);
+
+        if (keepLastDeletedEntryFields) {
+
+        }
+    }
+
     public void deleteEntry() {
         if (aRowIsSelected) {
+            keepLastDeletedEntryFields = true;
+
             entries.remove(currentRowIndex);
-            int rowNumber = 1;
-            for (Map<Key, Object> entry: entries) {
-                entry.put(new Key("rownumber"), rowNumber++);
-            }
+            resetRowNumbers();
             displayEntries("");
             System.out.println(currentRowIndex);
         }
@@ -107,6 +113,7 @@ public class BMMainScreen implements Initializable, BMFilter {
 
     public void rowSelected() {
         currentRow = null;
+        confirmButton.setText("Change");
 
         if (!aRowIsSelected) {
             currentRow = tableView.getSelectionModel().getSelectedItem();
@@ -139,6 +146,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     private void fillEntryEditField(Set currentRowSet) {
+        keepLastDeletedEntryFields = false;
+
         Object[] currentRowArray = currentRowSet.toArray();
         int entryIndex = 0;
 
@@ -176,6 +185,15 @@ public class BMMainScreen implements Initializable, BMFilter {
         if (tableView.getSelectionModel().getSelectedItem() != null) {
 //            fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
             typeChanged();
+        }
+    }
+
+    public void resetRowNumbers() {
+        if (currentRowIndex != entries.size()) {
+            int rowNumber = 1;
+            for (Map<Key, Object> entry: entries) {
+                entry.put(new Key("rownumber"), rowNumber++);
+            }
         }
     }
 
