@@ -157,33 +157,6 @@ public class BMEditEntry {
         }
     }
 
-//    private boolean checkRequiredFields() {
-//        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString();
-//        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType.toLowerCase());
-//        int numberOfRequiredFields = Integer.parseInt(entryFieldOptions[0]);
-//
-//        for (int i = 0; i < numberOfRequiredFields * 2; ) {
-//
-//            TextArea textArea = (TextArea) editField.getChildren().get(i++);
-//            Label label = (Label) editField.getChildren().get(i++);
-//
-//            String fieldName = label.getText();
-//            String fieldContent = textArea.getText();
-//
-//            if (fieldContent.equals("") || fieldContent.trim().length() < 1) {
-//                Alert alert = new Alert(Alert.AlertType.ERROR);
-//                alert.setTitle("Error");
-//                alert.setHeaderText("Required Field Error!");
-//                alert.setContentText(fieldName + " field cannot be empty for entry type " + selectedType + ".");
-//
-//                alert.showAndWait();
-//                return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
     public void typeChanged() {
         String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
         String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
