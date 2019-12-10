@@ -1,3 +1,4 @@
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -112,25 +113,27 @@ public class BMEditEntry {
         String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
         String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
 
-        removeUnnecessaryFields(previousEntryFields, neededEntryFields);
+        if (checkRequiredFields()) {
+            removeUnnecessaryFields(previousEntryFields, neededEntryFields);
 
-        selectedRow.put(new Key("type"), selectedType);
-        for (int i = 0; i < 26; ) {
-            TextArea textArea = (TextArea) editField.getChildren().get(i++);
-            Label label = (Label) editField.getChildren().get(i++);
+            selectedRow.put(new Key("type"), selectedType);
+            for (int i = 0; i < 26; ) {
+                TextArea textArea = (TextArea) editField.getChildren().get(i++);
+                Label label = (Label) editField.getChildren().get(i++);
 
-            key = label.getText().toLowerCase();
-            value = textArea.getText();
+                key = label.getText().toLowerCase();
+                value = textArea.getText();
 
-            if (value != null && !value.equals("")) {
-                value = value.replace("\n", " ");
+                if (value != null && !value.equals("")) {
+                    value = value.replace("\n", " ");
 
-                selectedRow.put(new Key(key), value);
+                    selectedRow.put(new Key(key), value);
+                }
             }
-        }
 
-        entries.set(selectedIndex, selectedRow);
-        previousEntryFields = BMEntry.entryTypesMap.get(selectedType);
+            entries.set(selectedIndex, selectedRow);
+            previousEntryFields = BMEntry.entryTypesMap.get(selectedType);
+        }
     }
 
     private void removeUnnecessaryFields(String[] previousEntryFields, String[] neededEntryFields) {
@@ -151,6 +154,33 @@ public class BMEditEntry {
 
             fieldNotNeeded = true;
         }
+    }
+
+    private boolean checkRequiredFields() {
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString();
+        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType.toLowerCase());
+        int numberOfRequiredFields = Integer.parseInt(entryFieldOptions[0]);
+
+        for (int i = 0; i < numberOfRequiredFields * 2; ) {
+
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            String fieldName = label.getText();
+            String fieldContent = textArea.getText();
+
+            if (fieldContent == null || fieldContent.equals("")) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Required Field Error!");
+                alert.setContentText(fieldName + " field cannot be empty for entry type " + selectedType + ".");
+
+                alert.showAndWait();
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void typeChanged() {
