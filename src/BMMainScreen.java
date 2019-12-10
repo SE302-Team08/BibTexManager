@@ -1,8 +1,6 @@
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -34,14 +32,12 @@ public class BMMainScreen implements Initializable, BMFilter {
     @FXML private GridPane entryEditField;
     @FXML private ChoiceBox entryTypeChoiceBox;
     @FXML private Button confirmButton;
-    private BMParser parser;
-//    private BMFormatter formatter;
+    //    private BMFormatter formatter;
     private BibTeXDatabase database;
     private BMEditEntry bmEditEntry;
     private boolean aRowIsSelected = false;
     private int currentRowIndex = -1;
     private List<Map<Key, Object>> entries;
-    private ObservableList<Map> entriesObservableList;
     private String searchKeyword = "";
     private Map currentRow;
     private boolean keepLastDeletedEntryFields = false;
@@ -87,7 +83,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void openLibrary() {
-        parser = new BMParser();
+        BMParser parser = new BMParser();
         entries = parser.readBibTexLibrary(null);
         database = parser.getBibTeXDatabase();
 
@@ -104,7 +100,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     private void displayEntries(String searchKeyword) {
-        entriesObservableList = FXCollections.observableArrayList();
+        ObservableList<Map> entriesObservableList = FXCollections.observableArrayList();
 
         if (entries != null) {
             if(searchKeyword.length() > 0) {
@@ -194,7 +190,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         }
     }
 
-    public void typeChanged() {
+    private void typeChanged() {
         if (bmEditEntry != null)
             bmEditEntry.typeChanged();
     }
@@ -208,7 +204,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         typeChanged();
     }
 
-    public void resetRowNumbers() {
+    private void resetRowNumbers() {
         if (currentRowIndex != entries.size()) {
             int rowNumber = 1;
             for (Map<Key, Object> entry: entries) {
