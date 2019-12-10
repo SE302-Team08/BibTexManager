@@ -1,3 +1,4 @@
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -22,28 +23,55 @@ public class BMAddEntry {
         String key;
         String value;
 
-        newEntry = new KeyMap<>();
+        if (checkRequiredFields()) {
+            newEntry = new KeyMap<>();
+            newEntry.put(new Key("rownumber"), entries.size() + 1);
+            String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
+            newEntry.put(new Key("type"), selectedType);
 
-        newEntry.put(new Key("rownumber"), entries.size() + 1);
+            for (int i = 0; i < 26; ) {
+                TextArea textArea = (TextArea) editField.getChildren().get(i++);
+                Label label = (Label) editField.getChildren().get(i++);
 
-        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
-        newEntry.put(new Key("type"), selectedType);
+                key = label.getText().toLowerCase();
+                value = textArea.getText();
 
-        for (int i = 0; i < 26; ) {
+                if (value != null && !value.equals("")) {
+                    value = value.replace("\n", " ");
+
+                    newEntry.put(new Key(key), value);
+                }
+            }
+
+            entries.add(newEntry);
+        }
+    }
+
+    private boolean checkRequiredFields() {
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString();
+        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType.toLowerCase());
+        int numberOfRequiredFields = Integer.parseInt(entryFieldOptions[0]);
+
+        for (int i = 0; i < numberOfRequiredFields * 2; ) {
+
             TextArea textArea = (TextArea) editField.getChildren().get(i++);
             Label label = (Label) editField.getChildren().get(i++);
 
-            key = label.getText().toLowerCase();
-            value = textArea.getText();
+            String fieldName = label.getText();
+            String fieldContent = textArea.getText();
 
-            if (value != null && !value.equals("")) {
-                value = value.replace("\n", " ");
+            if (fieldContent == null || fieldContent.equals("")) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Required Field Error!");
+                alert.setContentText(fieldName + " field cannot be empty for entry type " + selectedType + ".");
 
-                newEntry.put(new Key(key), value);
+                alert.showAndWait();
+                return false;
             }
         }
 
-        entries.add(newEntry);
+        return true;
     }
 
     public void resetEntryEditField() {
