@@ -111,20 +111,21 @@ public class BMEditEntry {
         String value;
 
         String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
-        String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
+        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType);
+        int numberOfFields = Integer.parseInt(entryFieldOptions[0]) + Integer.parseInt(entryFieldOptions[1]);
 
-        if (checkRequiredFields()) {
-            removeUnnecessaryFields(previousEntryFields, neededEntryFields);
+        if (new BMAddEntry(editField, entryTypeChoiceBox).checkRequiredFields()) {
+            removeUnnecessaryFields(previousEntryFields, entryFieldOptions);
 
             selectedRow.put(new Key("type"), selectedType);
-            for (int i = 0; i < 26; ) {
+            for (int i = 0; i < numberOfFields * 2; ) {
                 TextArea textArea = (TextArea) editField.getChildren().get(i++);
                 Label label = (Label) editField.getChildren().get(i++);
 
                 key = label.getText().toLowerCase();
                 value = textArea.getText();
 
-                if (value != null && !value.equals("")) {
+                if (!value.equals("")) {
                     value = value.replace("\n", " ");
 
                     selectedRow.put(new Key(key), value);
@@ -156,32 +157,32 @@ public class BMEditEntry {
         }
     }
 
-    private boolean checkRequiredFields() {
-        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString();
-        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType.toLowerCase());
-        int numberOfRequiredFields = Integer.parseInt(entryFieldOptions[0]);
-
-        for (int i = 0; i < numberOfRequiredFields * 2; ) {
-
-            TextArea textArea = (TextArea) editField.getChildren().get(i++);
-            Label label = (Label) editField.getChildren().get(i++);
-
-            String fieldName = label.getText();
-            String fieldContent = textArea.getText();
-
-            if (fieldContent == null || fieldContent.equals("")) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Required Field Error!");
-                alert.setContentText(fieldName + " field cannot be empty for entry type " + selectedType + ".");
-
-                alert.showAndWait();
-                return false;
-            }
-        }
-
-        return true;
-    }
+//    private boolean checkRequiredFields() {
+//        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString();
+//        String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType.toLowerCase());
+//        int numberOfRequiredFields = Integer.parseInt(entryFieldOptions[0]);
+//
+//        for (int i = 0; i < numberOfRequiredFields * 2; ) {
+//
+//            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+//            Label label = (Label) editField.getChildren().get(i++);
+//
+//            String fieldName = label.getText();
+//            String fieldContent = textArea.getText();
+//
+//            if (fieldContent.equals("") || fieldContent.trim().length() < 1) {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle("Error");
+//                alert.setHeaderText("Required Field Error!");
+//                alert.setContentText(fieldName + " field cannot be empty for entry type " + selectedType + ".");
+//
+//                alert.showAndWait();
+//                return false;
+//            }
+//        }
+//
+//        return true;
+//    }
 
     public void typeChanged() {
         String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
@@ -196,13 +197,11 @@ public class BMEditEntry {
 
         int editFieldIndex = 0;
         for (int i = 2; i < neededEntryFields.length; i++) {
+            TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
             if (selectedRow != null && selectedRow.get(new Key(neededEntryFields[i].toLowerCase())) != null) {
-                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
                 textArea.setText(selectedRow.get(new Key(neededEntryFields[i].toLowerCase())).toString());
-            } else {
-                TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+            } else if (selectedRow != null)
                 textArea.setText("");
-            }
 
             Label label = (Label) editField.getChildren().get(editFieldIndex++);
             label.setText(neededEntryFields[i]);

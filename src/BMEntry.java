@@ -15,7 +15,7 @@ public final class BMEntry {
     public static final String[] MISC = {"0", "8", "Author", "Title", "HowPublished", "Month", "Year", "Note", "Key", "Comment"};
     public static final String[] PHDTHESIS = {"4", "5", "Author", "Title", "School", "Year", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] PROCEEDINGS = {"2", "8", "Title", "Year", "Editor", "Publisher", "Organization", "Address", "Month", "Note", "Key", "Comment"};
-    public static final String[] TECHREPORT = {"4", "7", "Author", "Title", "Institution", "Year", "Type", "Number", "Address", "Month", "Note", "Key", "Comment"};
+    public static final String[] TECHREPORT = {"4", "7", "Author", "Title", "Institution", "Year", "Report Type", "Number", "Address", "Month", "Note", "Key", "Comment"};
     public static final String[] UNPUBLISHED = {"3", "4", "Author", "Title", "Note", "Month", "Year", "Key", "Comment"};
     public static final Map<String, String[]> entryTypesMap = new HashMap<String, String[]>() {
         {
