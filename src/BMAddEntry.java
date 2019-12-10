@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class BMAddEntry {
     private GridPane editField;
-    private ChoiceBox entryType;
+    private ChoiceBox entryTypeChoiceBox;
     private Map<Key, Object> newEntry;
 
-    public BMAddEntry(GridPane editField, ChoiceBox entryType) {
+    public BMAddEntry(GridPane editField, ChoiceBox entryTypeChoiceBox) {
         this.editField = editField;
-        this.entryType = entryType;
+        this.entryTypeChoiceBox = entryTypeChoiceBox;
     }
 
     public void addEntry(List<Map<Key, Object>> entries) {
@@ -24,7 +24,7 @@ public class BMAddEntry {
 
         newEntry = new KeyMap<>();
 
-        String selectedType = entryType.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
         newEntry.put(new Key("type"), selectedType);
 
         for (int i = 0; i < 26; ) {
@@ -44,7 +44,48 @@ public class BMAddEntry {
         entries.add(newEntry);
     }
 
-    public void resetEditEntryField() {
+    public void arrangeEntryEditField() {
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
 
+        int showUntil;
+        if (!BMMainScreen.optionalFields.isSelected()) {
+            showUntil = Integer.parseInt(neededEntryFields[0]) * 2;
+        } else {
+            showUntil = (Integer.parseInt(neededEntryFields[0]) + Integer.parseInt(neededEntryFields[1])) * 2;
+        }
+
+        int editFieldIndex = 0;
+        for (int i = 2; i < neededEntryFields.length; i++) {
+            TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
+            textArea.setText("");
+
+            Label label = (Label) editField.getChildren().get(editFieldIndex++);
+            label.setText(neededEntryFields[i]);
+        }
+
+        for (int i = 0; i < showUntil; ) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            textArea.setVisible(true);
+            label.setVisible(true);
+        }
+
+        for (int i = showUntil; i < 26; ) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i++);
+            Label label = (Label) editField.getChildren().get(i++);
+
+            textArea.setVisible(false);
+            label.setVisible(false);
+        }
+    }
+
+    public void resetEntryEditField() {
+        for (int i = 0; i < 26; i+=2) {
+            TextArea textArea = (TextArea) editField.getChildren().get(i);
+            textArea.setText("");
+            System.out.println("here");
+        }
     }
 }

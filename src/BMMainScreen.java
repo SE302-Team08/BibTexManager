@@ -30,7 +30,7 @@ public class BMMainScreen implements Initializable, BMFilter {
     @FXML private TextField searchBar;
     @FXML private BorderPane mainBorderPane;
     @FXML private GridPane entryEditField;
-    @FXML private ChoiceBox entryTypeChoice;
+    @FXML private ChoiceBox entryTypeChoiceBox;
     @FXML private Button confirmButton;
     private BMParser parser;
 //    private BMFormatter formatter;
@@ -51,11 +51,18 @@ public class BMMainScreen implements Initializable, BMFilter {
 //
     public void addEntry() {
         confirmButton.setText("Add");
+//        entryTypeChoiceBox.getSelectionModel()
+//                .selectedIndexProperty()
+//                .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 
-        BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoice);
+        BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoiceBox);
+        tableView.getSelectionModel().clearSelection();
+        bmEditEntry.setSelectedRowToNull();
+        mainBorderPane.setBottom(entryEditField);
+//        bmEditEntry.typeChanged();
 
-        if (keepLastDeletedEntryFields) {
-
+        if (!keepLastDeletedEntryFields) {
+            bmAddEntry.resetEntryEditField();
         }
     }
 
@@ -160,7 +167,7 @@ public class BMMainScreen implements Initializable, BMFilter {
             }
         }
 
-        bmEditEntry = new BMEditEntry(entryIndex, entries, entryEditField, entryTypeChoice);
+        bmEditEntry = new BMEditEntry(entryIndex, entries, entryEditField, entryTypeChoiceBox);
 
         bmEditEntry.fillEntryEditFields();
     }
@@ -226,8 +233,8 @@ public class BMMainScreen implements Initializable, BMFilter {
         }
 
         optionalFields = new CheckBox();
-        entryTypeChoice.getItems().addAll(FXCollections.observableArrayList(BMEntry.TYPES));
-        entryTypeChoice.getSelectionModel()
+        entryTypeChoiceBox.getItems().addAll(FXCollections.observableArrayList(BMEntry.TYPES));
+        entryTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 

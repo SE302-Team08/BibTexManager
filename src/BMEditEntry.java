@@ -11,14 +11,19 @@ import java.util.Map;
 public class BMEditEntry {
     private int selectedIndex;
     private GridPane editField;
-    private ChoiceBox entryType;
+    private ChoiceBox entryTypeChoiceBox;
     private Map<Key, Object> selectedRow;
     private String[] previousEntryFields;
 
-    public BMEditEntry(int selectedIndex, List<Map<Key, Object>> entries, GridPane editField, ChoiceBox entryType) {
+    public BMEditEntry(GridPane editField, ChoiceBox entryTypeChoiceBox) {
+        this.editField = editField;
+        this.entryTypeChoiceBox = entryTypeChoiceBox;
+    }
+
+    public BMEditEntry(int selectedIndex, List<Map<Key, Object>> entries, GridPane editField, ChoiceBox entryTypeChoiceBox) {
         this.selectedIndex = selectedIndex;
         this.editField = editField;
-        this.entryType = entryType;
+        this.entryTypeChoiceBox = entryTypeChoiceBox;
         this.selectedRow = entries.get(selectedIndex);
         this.previousEntryFields = new String[15];
     }
@@ -29,72 +34,72 @@ public class BMEditEntry {
 
         switch (selectedRowType) {
             case "article":
-                entryType.getSelectionModel().select("Article");
+                entryTypeChoiceBox.getSelectionModel().select("Article");
                 typeChanged();
                 break;
 
             case "book":
-                entryType.getSelectionModel().select("Book");
+                entryTypeChoiceBox.getSelectionModel().select("Book");
                 typeChanged();
                 break;
 
             case "booklet":
-                entryType.getSelectionModel().select("Booklet");
+                entryTypeChoiceBox.getSelectionModel().select("Booklet");
                 typeChanged();
                 break;
 
             case "conference":
-                entryType.getSelectionModel().select("Conference");
+                entryTypeChoiceBox.getSelectionModel().select("Conference");
                 typeChanged();
                 break;
 
             case "inbook":
-                entryType.getSelectionModel().select("InBook");
+                entryTypeChoiceBox.getSelectionModel().select("InBook");
                 typeChanged();
                 break;
 
             case "incollection":
-                entryType.getSelectionModel().select("InCollection");
+                entryTypeChoiceBox.getSelectionModel().select("InCollection");
                 typeChanged();
                 break;
 
             case "inproceedings":
-                entryType.getSelectionModel().select("InProceedings");
+                entryTypeChoiceBox.getSelectionModel().select("InProceedings");
                 typeChanged();
                 break;
 
             case "manual":
-                entryType.getSelectionModel().select("Manual");
+                entryTypeChoiceBox.getSelectionModel().select("Manual");
                 typeChanged();
                 break;
 
             case "mastersthesis":
-                entryType.getSelectionModel().select("MastersThesis");
+                entryTypeChoiceBox.getSelectionModel().select("MastersThesis");
                 typeChanged();
                 break;
 
             case "misc":
-                entryType.getSelectionModel().select("Misc");
+                entryTypeChoiceBox.getSelectionModel().select("Misc");
                 typeChanged();
                 break;
 
             case "phdthesis":
-                entryType.getSelectionModel().select("PhDThesis");
+                entryTypeChoiceBox.getSelectionModel().select("PhDThesis");
                 typeChanged();
                 break;
 
             case "proceedings":
-                entryType.getSelectionModel().select("Proceedings");
+                entryTypeChoiceBox.getSelectionModel().select("Proceedings");
                 typeChanged();
                 break;
 
             case "techreport":
-                entryType.getSelectionModel().select("TechReport");
+                entryTypeChoiceBox.getSelectionModel().select("TechReport");
                 typeChanged();
                 break;
 
             case "unpublished":
-                entryType.getSelectionModel().select("Unpublished");
+                entryTypeChoiceBox.getSelectionModel().select("Unpublished");
                 typeChanged();
                 break;
         }
@@ -104,8 +109,9 @@ public class BMEditEntry {
         String key;
         String value;
 
-        String selectedType = entryType.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
         String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
+
         removeUnnecessaryFields(previousEntryFields, neededEntryFields);
 
         selectedRow.put(new Key("type"), selectedType);
@@ -131,7 +137,7 @@ public class BMEditEntry {
         boolean fieldNotNeeded = true;
 
         if (previousEntryFields == null)
-            previousEntryFields = BMEntry.entryTypesMap.get(entryType.getSelectionModel().getSelectedItem().toString().toLowerCase());
+            previousEntryFields = BMEntry.entryTypesMap.get(entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase());
 
         for (String previousField: previousEntryFields) {
             for (String currentField: neededEntryFields) {
@@ -148,7 +154,7 @@ public class BMEditEntry {
     }
 
     public void typeChanged() {
-        String selectedType = entryType.getSelectionModel().getSelectedItem().toString().toLowerCase();
+        String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
         String[] neededEntryFields = BMEntry.entryTypesMap.get(selectedType);
 
         int showUntil;
@@ -160,7 +166,7 @@ public class BMEditEntry {
 
         int editFieldIndex = 0;
         for (int i = 2; i < neededEntryFields.length; i++) {
-            if (selectedRow.get(new Key(neededEntryFields[i].toLowerCase())) != null) {
+            if (selectedRow != null && selectedRow.get(new Key(neededEntryFields[i].toLowerCase())) != null) {
                 TextArea textArea = (TextArea) editField.getChildren().get(editFieldIndex++);
                 textArea.setText(selectedRow.get(new Key(neededEntryFields[i].toLowerCase())).toString());
             } else {
@@ -187,5 +193,9 @@ public class BMEditEntry {
             textArea.setVisible(false);
             label.setVisible(false);
         }
+    }
+
+    public void setSelectedRowToNull() {
+        selectedRow = null;
     }
 }
