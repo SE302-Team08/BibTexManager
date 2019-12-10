@@ -146,7 +146,7 @@ public class BMEditEntry {
                     break;
                 }
             }
-            if (fieldNotNeeded)
+            if (fieldNotNeeded && selectedRow != null)
                 selectedRow.remove(new Key(previousField));
 
             fieldNotNeeded = true;

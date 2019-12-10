@@ -1,6 +1,8 @@
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -51,15 +53,22 @@ public class BMMainScreen implements Initializable, BMFilter {
 //
     public void addEntry() {
         confirmButton.setText("Add");
-//        entryTypeChoiceBox.getSelectionModel()
-//                .selectedIndexProperty()
-//                .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
+        entryTypeChoiceBox.getSelectionModel().select(0);
 
         BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoiceBox);
-        tableView.getSelectionModel().clearSelection();
+
+        confirmButton.setOnAction(event -> {
+            bmAddEntry.addEntry(entries);
+            displayEntries("");
+        });
+
+        if (bmEditEntry == null) {
+            bmEditEntry = new BMEditEntry(entryEditField, entryTypeChoiceBox);
+        }
         bmEditEntry.setSelectedRowToNull();
+        bmEditEntry.typeChanged();
+
         mainBorderPane.setBottom(entryEditField);
-//        bmEditEntry.typeChanged();
 
         if (!keepLastDeletedEntryFields) {
             bmAddEntry.resetEntryEditField();
@@ -103,6 +112,7 @@ public class BMMainScreen implements Initializable, BMFilter {
                     for (Key key: entryMap.keySet()) {
                         if (entryMap.get(key).toString().toLowerCase().contains(searchKeyword.toLowerCase())) {
                             entriesObservableList.add(entryMap);
+                            break;
                         }
                     }
 
@@ -121,6 +131,10 @@ public class BMMainScreen implements Initializable, BMFilter {
     public void rowSelected() {
         currentRow = null;
         confirmButton.setText("Change");
+
+        if (bmEditEntry != null) {
+            confirmButton.setOnAction(event -> confirmChanges());
+        }
 
         if (!aRowIsSelected) {
             currentRow = tableView.getSelectionModel().getSelectedItem();
@@ -181,7 +195,8 @@ public class BMMainScreen implements Initializable, BMFilter {
     }
 
     public void typeChanged() {
-        bmEditEntry.typeChanged();
+        if (bmEditEntry != null)
+            bmEditEntry.typeChanged();
     }
 
     public void optionalFieldsSelected() {
@@ -189,10 +204,8 @@ public class BMMainScreen implements Initializable, BMFilter {
         if (currentRow != null) {
             tableView.getSelectionModel().select(currentRow);
         }
-        if (tableView.getSelectionModel().getSelectedItem() != null) {
-//            fillEntryEditField(tableView.getSelectionModel().getSelectedItem().entrySet());
-            typeChanged();
-        }
+
+        typeChanged();
     }
 
     public void resetRowNumbers() {
