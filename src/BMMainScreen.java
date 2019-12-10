@@ -66,13 +66,13 @@ public class BMMainScreen implements Initializable, BMFilter {
             bmEditEntry = new BMEditEntry(entryEditField, entryTypeChoiceBox);
         }
         bmEditEntry.setSelectedRowToNull();
-        bmEditEntry.typeChanged();
-
-        mainBorderPane.setBottom(entryEditField);
 
         if (!keepLastDeletedEntryFields) {
             bmAddEntry.resetEntryEditField();
+            bmEditEntry.typeChanged();
         }
+
+        mainBorderPane.setBottom(entryEditField);
     }
 
     public void deleteEntry() {
