@@ -3,6 +3,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
+import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
 import org.jbibtex.KeyMap;
 
@@ -14,6 +15,7 @@ public class BMAddEntry {
     private ChoiceBox entryTypeChoiceBox;
     private Map<Key, Object> newEntry;
     private int numberOfEntries;
+    private List<Map<Key, Object>> entries;
 
     public BMAddEntry(GridPane editField, ChoiceBox entryTypeChoiceBox) {
         this.editField = editField;
@@ -21,6 +23,7 @@ public class BMAddEntry {
     }
 
     public void addEntry(List<Map<Key, Object>> entries) {
+        this.entries = entries;
         numberOfEntries = entries.size();
         String key;
         String value;
@@ -40,7 +43,9 @@ public class BMAddEntry {
                 key = label.getText().toLowerCase();
                 value = textArea.getText();
 
-                System.out.println(key + " " + value);
+                if (key.equals("key")) {
+                    bibTexKeyCheck(value);
+                }
 
                 if (!value.equals("")) {
                     value = value.replace("\n", " ");
@@ -85,7 +90,7 @@ public class BMAddEntry {
                 int lastIndex = 4;
                 while (true) {
                     try {
-                        entryKey += textArea.getText().substring(0, lastIndex);
+                        entryKey += textArea.getText().replace(" ", "").substring(0, lastIndex);
                     } catch (StringIndexOutOfBoundsException e) {
                         lastIndex--;
                         continue;
@@ -102,6 +107,13 @@ public class BMAddEntry {
         }
 
         return true;
+    }
+
+    public String bibTexKeyCheck(String key) {
+        for (Map<Key, Object> entry: entries) {
+            entry.get(BibTeXEntry.KEY_KEY);
+        }
+        return "";
     }
 
     public void resetEntryEditField() {
