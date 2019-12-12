@@ -39,24 +39,7 @@ public class BMParser {
                 );
 
                 // BibTex Parser created here.
-                bibTeXParser = new org.jbibtex.BibTeXParser(){
-
-                    @Override
-                    public void checkStringResolution(org.jbibtex.Key key, org.jbibtex.BibTeXString string){
-
-                        if(string == null){
-                            System.err.println("Unresolved string: \"" + key.getValue() + "\"");
-                        }
-                    }
-
-                    @Override
-                    public void checkCrossReferenceResolution(org.jbibtex.Key key, org.jbibtex.BibTeXEntry entry){
-
-                        if(entry == null){
-                            System.err.println("Unresolved cross-reference: \"" + key.getValue() + "\"");
-                        }
-                    }
-                };
+                bibTeXParser = new org.jbibtex.BibTeXParser();
 
                 //Database initialized to the parsed version of the reader/file by using the bibTexParser created above.
                 bibTeXDatabase = bibTeXParser.parseFully(reader);

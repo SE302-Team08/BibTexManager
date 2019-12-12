@@ -6,6 +6,7 @@ import javafx.scene.layout.GridPane;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ public class BMEditEntry {
     private ChoiceBox entryTypeChoiceBox;
     private Map<Key, Object> selectedRow;
     private String[] previousEntryFields;
+    private BMAddEntry bmAddEntry;
 
     public BMEditEntry(GridPane editField, ChoiceBox entryTypeChoiceBox) {
         this.editField = editField;
@@ -27,6 +29,7 @@ public class BMEditEntry {
         this.entryTypeChoiceBox = entryTypeChoiceBox;
         this.selectedRow = entries.get(selectedIndex);
         this.previousEntryFields = new String[15];
+        this.bmAddEntry = new BMAddEntry(editField, entryTypeChoiceBox);
     }
 
     public void fillEntryEditFields() {
@@ -114,7 +117,7 @@ public class BMEditEntry {
         String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType);
         int numberOfFields = Integer.parseInt(entryFieldOptions[0]) + Integer.parseInt(entryFieldOptions[1]);
 
-        if (new BMAddEntry(editField, entryTypeChoiceBox).checkRequiredFields()) {
+        if (bmAddEntry.checkRequiredFields()) {
             removeUnnecessaryFields(previousEntryFields, entryFieldOptions);
 
             selectedRow.put(new Key("type"), selectedType);
@@ -132,19 +135,22 @@ public class BMEditEntry {
                 }
             }
 
+            String entryKey = bibTexKeyCheck(entries, (String) selectedRow.get(BibTeXEntry.KEY_KEY));
+            selectedRow.put(BibTeXEntry.KEY_KEY, entryKey);
+
             entries.set(selectedIndex, selectedRow);
             previousEntryFields = BMEntry.entryTypesMap.get(selectedType);
         }
     }
 
-    private void removeUnnecessaryFields(String[] previousEntryFields, String[] neededEntryFields) {
+    private void removeUnnecessaryFields(String[] previousEntryFields, String[] entryFieldOptions) {
         boolean fieldNotNeeded = true;
 
         if (previousEntryFields == null)
             previousEntryFields = BMEntry.entryTypesMap.get(entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase());
 
         for (String previousField: previousEntryFields) {
-            for (String currentField: neededEntryFields) {
+            for (String currentField: entryFieldOptions) {
                 if (currentField.toLowerCase().equals(previousField)) {
                     fieldNotNeeded = false;
                     break;
@@ -155,6 +161,17 @@ public class BMEditEntry {
 
             fieldNotNeeded = true;
         }
+    }
+
+    private String bibTexKeyCheck(List<Map<Key, Object>> entries, String key) {
+        SecureRandom random = new SecureRandom();
+        for (Map<Key, Object> entry: entries) {
+            if (entry.get(BibTeXEntry.KEY_KEY).equals(key) && entry != selectedRow) {
+                key = key + random.nextInt(1000);
+                bibTexKeyCheck(entries, key);
+            }
+        }
+        return key;
     }
 
     public void typeChanged() {

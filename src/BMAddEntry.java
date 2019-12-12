@@ -16,7 +16,6 @@ public class BMAddEntry {
     private ChoiceBox entryTypeChoiceBox;
     private Map<Key, Object> newEntry;
     private int numberOfEntries;
-    private List<Map<Key, Object>> entries;
 
     public BMAddEntry(GridPane editField, ChoiceBox entryTypeChoiceBox) {
         this.editField = editField;
@@ -24,7 +23,6 @@ public class BMAddEntry {
     }
 
     public void addEntry(List<Map<Key, Object>> entries) {
-        this.entries = entries;
         numberOfEntries = entries.size();
         String key;
         String value;
@@ -45,7 +43,7 @@ public class BMAddEntry {
                 value = textArea.getText();
 
                 if (key.equals("key")) {
-                    value = bibTexKeyCheck(value);
+                    value = bibTexKeyCheck(entries, value);
                 }
 
                 if (!value.equals("")) {
@@ -110,14 +108,12 @@ public class BMAddEntry {
         return true;
     }
 
-    public String bibTexKeyCheck(String key) {
+    private String bibTexKeyCheck(List<Map<Key, Object>> entries, String key) {
         SecureRandom random = new SecureRandom();
         for (Map<Key, Object> entry: entries) {
-            System.out.println(entry.get(BibTeXEntry.KEY_KEY) + "   " + key);
             if (entry.get(BibTeXEntry.KEY_KEY).equals(key)) {
-                System.out.println("in here");
                 key = key + random.nextInt(1000);
-                bibTexKeyCheck(key);
+                bibTexKeyCheck(entries, key);
             }
         }
         return key;
