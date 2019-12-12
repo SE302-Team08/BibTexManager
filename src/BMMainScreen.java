@@ -56,6 +56,7 @@ public class BMMainScreen implements Initializable, BMFilter {
         confirmButton.setOnAction(event -> {
             bmAddEntry.addEntry(entries);
             displayEntries("");
+            tableView.scrollTo(entries.size());
         });
 
         if (bmEditEntry == null) {
