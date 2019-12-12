@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.jbibtex.*;
@@ -22,10 +24,10 @@ public class BMMainScreen implements Initializable, BMFilter {
     @FXML private TableView<Map> tableView;
     @FXML private TableColumn<Map, Integer> numberColumn;
     @FXML private TableColumn<Map, String> entryTypeColumn;
-    @FXML private TableColumn<Map, String> authorEditorColumn;
+    @FXML private TableColumn<Map, String> authorColumn;
     @FXML private TableColumn<Map, String> titleColumn;
     @FXML private TableColumn<Map, Object> yearColumn;
-    @FXML private TableColumn<Map, String> journalBookTitleColumn;
+    @FXML private TableColumn<Map, String> journalColumn;
     @FXML private TableColumn<Map, String> bibTexKeyColumn;
     @FXML private TextField searchBar;
     @FXML private BorderPane mainBorderPane;
@@ -219,19 +221,18 @@ public class BMMainScreen implements Initializable, BMFilter {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
         titleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
-        authorEditorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
-        journalBookTitleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
+        authorColumn.setCellFactory(TooltippedTableCell.forTableColumn());
+        journalColumn.setCellFactory(TooltippedTableCell.forTableColumn());
 
         Key numberKey = new Key("rownumber");
         numberColumn.setCellValueFactory(new MapValueFactory<>(numberKey));
         titleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TITLE));
 
         entryTypeColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_TYPE));
-        authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_AUTHOR));
+        authorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_AUTHOR));
 
-//        authorEditorColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_EDITOR));
         yearColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_YEAR));
-        journalBookTitleColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
+        journalColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_JOURNAL));
 
         bibTexKeyColumn.setCellValueFactory(new MapValueFactory<>(BibTeXEntry.KEY_KEY));
 
@@ -247,8 +248,5 @@ public class BMMainScreen implements Initializable, BMFilter {
         entryTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
-
-//        BMFormatter bmFormatter = new BMFormatter();
-//        bmFormatter.addEntryToEntriesMap();
     }
 }

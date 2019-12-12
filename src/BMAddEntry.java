@@ -9,6 +9,7 @@ import org.jbibtex.KeyMap;
 
 import java.util.List;
 import java.util.Map;
+import java.security.SecureRandom;
 
 public class BMAddEntry {
     private GridPane editField;
@@ -44,7 +45,7 @@ public class BMAddEntry {
                 value = textArea.getText();
 
                 if (key.equals("key")) {
-                    bibTexKeyCheck(value);
+                    value = bibTexKeyCheck(value);
                 }
 
                 if (!value.equals("")) {
@@ -110,10 +111,16 @@ public class BMAddEntry {
     }
 
     public String bibTexKeyCheck(String key) {
+        SecureRandom random = new SecureRandom();
         for (Map<Key, Object> entry: entries) {
-            entry.get(BibTeXEntry.KEY_KEY);
+            System.out.println(entry.get(BibTeXEntry.KEY_KEY) + "   " + key);
+            if (entry.get(BibTeXEntry.KEY_KEY).equals(key)) {
+                System.out.println("in here");
+                key = key + random.nextInt(1000);
+                bibTexKeyCheck(key);
+            }
         }
-        return "";
+        return key;
     }
 
     public void resetEntryEditField() {
