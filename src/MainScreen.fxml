@@ -227,6 +227,8 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#addEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
                   <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="undoBtn" mnemonicParsing="false" text="Undo" />
+                  <Button fx:id="redoBtn" mnemonicParsing="false" text="Redo" />
                   <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
                   <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" text="Optional Fields" textAlignment="CENTER" />
                   <HBox prefHeight="25.0" prefWidth="435.0" HBox.hgrow="ALWAYS" />

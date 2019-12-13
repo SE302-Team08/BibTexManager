@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 
 public class BMMain extends Application {
     public static Stage stage;
+    public static Scene scene;
     public static void main(String[] args) {
         launch(args);
     }
@@ -14,9 +15,10 @@ public class BMMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("MainScreen.fxml"));
 
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("./stylesheet.css");
-        primaryStage.setScene(scene);
+        Scene s = new Scene(root);
+        scene = s;
+        s.getStylesheets().add("./stylesheet.css");
+        primaryStage.setScene(s);
         primaryStage.setTitle("BibTex Manager");
         stage = primaryStage;
         primaryStage.show();
