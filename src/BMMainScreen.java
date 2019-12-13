@@ -1,4 +1,3 @@
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,8 +6,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -22,10 +19,11 @@ import org.fxmisc.undo.UndoManager;
 import org.fxmisc.undo.UndoManagerFactory;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
+import static org.reactfx.EventStreams.*;
 
 import javafx.scene.control.Button;
 
-import static org.reactfx.EventStreams.*;
+
 
 public class BMMainScreen implements Initializable {
 //    @FXML private Button createButton;
@@ -240,11 +238,11 @@ public class BMMainScreen implements Initializable {
         }
     }
 
-    private class searchBarChange extends ChangeManager<String> {
-        public searchBarChange(String oldValue, String newValue) {
+    private class SearchBarChange extends ChangeManager<String> {
+        public SearchBarChange(String oldValue, String newValue) {
             super(oldValue, newValue);
         }
-        public searchBarChange(Change<String> c) {
+        public SearchBarChange(Change<String> c) {
             this(c.getOldValue(), c.getNewValue());
         }
         @Override void redo() {
@@ -252,12 +250,12 @@ public class BMMainScreen implements Initializable {
             displayEntries(newValue);
         }
         @Override
-        searchBarChange invert() { return new searchBarChange(newValue, oldValue); }
+        SearchBarChange invert() { return new SearchBarChange(newValue, oldValue); }
 
         @Override
         public boolean equals(Object other) {
-            if(other instanceof searchBarChange) {
-                searchBarChange that = (searchBarChange) other;
+            if(other instanceof SearchBarChange) {
+                SearchBarChange that = (SearchBarChange) other;
                 return Objects.equals(this.oldValue, that.oldValue)
                         && Objects.equals(this.newValue, that.newValue);
             } else {
@@ -299,10 +297,10 @@ public class BMMainScreen implements Initializable {
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 
-
         {
-            EventStream<searchBarChange> searchBarChanges = changesOf(searchBar.textProperty()).map(c -> new searchBarChange(c));
-            changes = merge(searchBarChanges);
+            EventStream<SearchBarChange> searchBarChanges = changesOf(searchBar.textProperty()).map(c -> new SearchBarChange(c));
+            EventStream<EntryEditFieldChange> textAreaChange = changesOf(((TextArea) entryEditField.getChildren().get(0)).textFormatterProperty().asString()).map(c -> new EntryEditFieldChange(c));
+            changes = merge(searchBarChanges, textAreaChange);
 
             undoManager = UndoManagerFactory.unlimitedHistorySingleChangeUM(
                     changes, // stream of changes to observe
