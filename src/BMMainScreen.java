@@ -1,3 +1,6 @@
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,12 +17,6 @@ import org.w3c.dom.Document;
 
 import java.net.URL;
 import java.util.*;
-
-import org.fxmisc.undo.UndoManager;
-import org.fxmisc.undo.UndoManagerFactory;
-import org.reactfx.Change;
-import org.reactfx.EventStream;
-import static org.reactfx.EventStreams.*;
 
 import javafx.scene.control.Button;
 
@@ -47,8 +44,8 @@ public class BMMainScreen implements Initializable {
 
     @FXML private Button undoBtn;
     @FXML private Button redoBtn;
-    private EventStream<ChangeManager<?>> changes;
-    private UndoManager<ChangeManager<?>> undoManager;
+//    private EventStream<ChangeManager<?>> changes;
+//    private UndoManager<ChangeManager<?>> undoManager;
 
 
     //    private BMFormatter formatter;
@@ -60,6 +57,17 @@ public class BMMainScreen implements Initializable {
     private String searchKeyword = "";
     private Map currentRow;
     private boolean keepLastDeletedEntryFields = false;
+    private Stack<Map<Key, Object>> deletedEntriesUndo = new Stack<>();
+    private Stack<Map<Key, Object>> deletedEntriesRedo = new Stack<>();
+    private Stack<Map<Key, Object>> editedEntriesUndo = new Stack<>();
+    private Stack<Map<Key, Object>> editedEntriesRedo = new Stack<>();
+    private Stack<Integer> addedEntriesUndo = new Stack<>();
+    private Stack<Integer> addedEntriesRedo = new Stack<>();
+    private Stack<String> undoEventQueue = new Stack<>();
+    private Stack<String> redoEventQueue = new Stack<>();
+    private final String ADD_EVENT = "add_event";
+    private final String DELETE_EVENT = "delete_event";
+    private final String EDIT_EVENT = "edit_event";
     public static CheckBox optionalFields;
 
 //    public void createLibrary() {
@@ -76,6 +84,8 @@ public class BMMainScreen implements Initializable {
             bmAddEntry.addEntry(entries);
             displayEntries("");
             tableView.scrollTo(entries.size());
+            addedEntriesUndo.add(entries.size() - 1);
+            undoEventQueue.add(ADD_EVENT);
         });
 
         if (bmEditEntry == null) {
@@ -98,7 +108,8 @@ public class BMMainScreen implements Initializable {
             entries.remove(currentRowIndex);
             resetRowNumbers();
             displayEntries("");
-            System.out.println(currentRowIndex);
+            deletedEntriesUndo.add(currentRow);
+            undoEventQueue.add(DELETE_EVENT);
         }
     }
 
@@ -113,7 +124,7 @@ public class BMMainScreen implements Initializable {
     public void searchInsideMap(KeyEvent e) {
         if (e.getCode() == KeyCode.SPACE) {
             System.out.println("here");
-            undoManager.mark();
+//            undoManager.mark();
         }
 
         if (searchBar.getText() == null)
@@ -213,6 +224,7 @@ public class BMMainScreen implements Initializable {
         if (currentRow != null) {
             tableView.getSelectionModel().select(currentRow);
         }
+        undoEventQueue.add(EDIT_EVENT);
     }
 
     private void typeChanged() {
@@ -238,30 +250,23 @@ public class BMMainScreen implements Initializable {
         }
     }
 
-    private class SearchBarChange extends ChangeManager<String> {
-        public SearchBarChange(String oldValue, String newValue) {
-            super(oldValue, newValue);
+    private void undo() {
+        System.out.println(undoEventQueue);
+        System.out.println(addedEntriesUndo);
+        switch (undoEventQueue.pop()) {
+            case ADD_EVENT:
+                // Check index and not the size!!!!!!!
+                int removeIndex = addedEntriesUndo.pop();
+                System.out.println(entries.get(removeIndex));
+                entries.remove(removeIndex);
+                resetRowNumbers();
+                displayEntries("");
+                break;
         }
-        public SearchBarChange(Change<String> c) {
-            this(c.getOldValue(), c.getNewValue());
-        }
-        @Override void redo() {
-            searchBar.setText(newValue);
-            displayEntries(newValue);
-        }
-        @Override
-        SearchBarChange invert() { return new SearchBarChange(newValue, oldValue); }
+    }
 
-        @Override
-        public boolean equals(Object other) {
-            if(other instanceof SearchBarChange) {
-                SearchBarChange that = (SearchBarChange) other;
-                return Objects.equals(this.oldValue, that.oldValue)
-                        && Objects.equals(this.newValue, that.newValue);
-            } else {
-                return false;
-            }
-        }
+    private void redo() {
+
     }
 
     @Override
@@ -297,21 +302,8 @@ public class BMMainScreen implements Initializable {
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 
-        {
-            EventStream<SearchBarChange> searchBarChanges = changesOf(searchBar.textProperty()).map(c -> new SearchBarChange(c));
-            EventStream<EntryEditFieldChange> textAreaChange = changesOf(((TextArea) entryEditField.getChildren().get(0)).textFormatterProperty().asString()).map(c -> new EntryEditFieldChange(c));
-            changes = merge(searchBarChanges, textAreaChange);
-
-            undoManager = UndoManagerFactory.unlimitedHistorySingleChangeUM(
-                    changes, // stream of changes to observe
-                    c -> c.invert(), // function to invert a change
-                    c -> c.redo(), // function to undo a change
-                    (c1, c2) -> c1.mergeWith(c2));
-
-            undoBtn.disableProperty().bind(undoManager.undoAvailableProperty().map(x -> !x));
-            redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
-            undoBtn.setOnAction(evt -> undoManager.undo());
-            redoBtn.setOnAction(evt -> undoManager.redo());
-        }
+//        redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
+        undoBtn.setOnAction(evt -> undo());
+//        redoBtn.setOnAction(evt -> undoManager.redo());
     }
 }
