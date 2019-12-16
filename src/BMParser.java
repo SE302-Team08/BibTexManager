@@ -14,15 +14,16 @@ public class BMParser {
     private BibTeXParser bibTeXParser;
     private BibTeXDatabase bibTeXDatabase;
     private Collection<BibTeXEntry> entries;
-    private List<Map<Key, Object>> entriesList;
+    private ArrayList<Map<Key, Object>> entriesList;
 
 
-    public List<Map<Key, Object>> readBibTexLibrary(String filePath) {
+    public ArrayList<Map<Key, Object>> readBibTexLibrary(String filePath) {
         entriesList = new ArrayList<>();
 
         try {
             // A file with the exact location of the bib file is created. The location is stored in bibFilePath
             if (filePath == null) {
+
                 fileChooser = new FileChooser();
                 fileChooser.setTitle("Open BibTex Library");
 
