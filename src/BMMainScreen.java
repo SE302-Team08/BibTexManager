@@ -372,5 +372,7 @@ public class BMMainScreen implements Initializable {
 //        redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
         undoBtn.setOnAction(evt -> undo());
         redoBtn.setOnAction(evt -> redo());
+
+        mainBorderPane.getBottom().autosize();
     }
 }
