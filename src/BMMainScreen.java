@@ -103,12 +103,18 @@ public class BMMainScreen implements Initializable {
             displayEntries("");
             deletedEntriesUndo.add(currentRow);
             undoEventStack.add(DELETE_EVENT);
+            aRowIsSelected = false;
+
+            System.out.println(deletedEntriesUndo);
         }
     }
 
     public void openLibrary() {
         BMParser parser = new BMParser();
-        ArrayList<Map<Key, Object>> tmpEntries = (ArrayList<Map<Key, Object>>) entries.clone();
+        ArrayList<Map<Key, Object>> tmpEntries = null;
+        if (entries != null) {
+           tmpEntries = (ArrayList<Map<Key, Object>>) entries.clone();
+        }
         entries = parser.readBibTexLibrary(null);
 
         if (entries == null && tmpEntries != null) {
@@ -247,7 +253,7 @@ public class BMMainScreen implements Initializable {
     }
 
     private void undo() {
-//        System.out.println(undoEventStack);
+        System.out.println(undoEventStack);
         if (!undoEventStack.empty()) {
             switch (undoEventStack.pop()) {
                 case ADD_EVENT:
@@ -261,6 +267,7 @@ public class BMMainScreen implements Initializable {
 
                 case DELETE_EVENT:
                     Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
+                    System.out.println(entryToBeAdded);
                     bibTexKeyCheck(entries, entryToBeAdded);
                     entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
                     deletedEntriesRedo.add(entryToBeAdded);
@@ -285,7 +292,7 @@ public class BMMainScreen implements Initializable {
     }
 
     private void redo() {
-//        System.out.println(redoEventStack);
+        System.out.println(redoEventStack);
         if (!redoEventStack.empty()) {
             switch (redoEventStack.pop()) {
                 case ADD_EVENT:
@@ -372,7 +379,5 @@ public class BMMainScreen implements Initializable {
 //        redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
         undoBtn.setOnAction(evt -> undo());
         redoBtn.setOnAction(evt -> redo());
-
-        mainBorderPane.getBottom().autosize();
     }
 }

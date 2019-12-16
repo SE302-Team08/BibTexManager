@@ -1,5 +1,6 @@
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,7 +49,7 @@ public class BMConfig {
         try {
             propsDocument = documentBuilder.parse(propsFile);
         } catch (IOException | SAXException e) {
-            e.printStackTrace();
+            System.out.println("No last opened files were found.");
         }
         return propsDocument;
     }
