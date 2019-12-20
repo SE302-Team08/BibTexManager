@@ -21,6 +21,7 @@ public class BMMain extends Application {
         primaryStage.setScene(s);
         primaryStage.setTitle("BibTex Manager");
         stage = primaryStage;
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

@@ -4,15 +4,20 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.jbibtex.*;
 import org.w3c.dom.Document;
 
+import javax.security.auth.kerberos.DelegationPermission;
+import java.awt.*;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.List;
 
 
 public class BMMainScreen implements Initializable {
@@ -56,8 +61,8 @@ public class BMMainScreen implements Initializable {
     private Stack<Map<Key, Object>> editedEntriesRedo = new Stack<>();
     private Stack<Map<Key, Object>> addedEntriesUndo = new Stack<>();
     private Stack<Map<Key, Object>> addedEntriesRedo = new Stack<>();
-    private Stack<String> undoEventStack = new Stack<>();
-    private Stack<String> redoEventStack = new Stack<>();
+    private Stack<Map<Map<Key, Object>, String>> undoEventStack = new Stack<>();
+    private Stack<Map<Map<Key, Object>, String>> redoEventStack = new Stack<>();
     private final String ADD_EVENT = "add_event";
     private final String DELETE_EVENT = "delete_event";
     private final String EDIT_EVENT = "edit_event";
@@ -77,8 +82,10 @@ public class BMMainScreen implements Initializable {
             bmAddEntry.addEntry(entries);
             displayEntries("");
             tableView.scrollTo(entries.size());
-            addedEntriesUndo.add(entries.get(entries.size() - 1));
-            undoEventStack.add(ADD_EVENT);
+            Map<Key, Object> addedEntry = entries.get(entries.size() - 1);
+            deleteDuplicates(addedEntriesUndo, undoEventStack, addedEntry);
+            addedEntriesUndo.add(addedEntry);
+            undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(addedEntry, ADD_EVENT);}});
         });
 
         if (bmEditEntry == null) {
@@ -101,11 +108,12 @@ public class BMMainScreen implements Initializable {
             entries.remove(currentRowIndex);
             resetRowNumbers();
             displayEntries("");
+            deleteDuplicates(deletedEntriesUndo, undoEventStack, currentRow);
             deletedEntriesUndo.add(currentRow);
-            undoEventStack.add(DELETE_EVENT);
+            undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, DELETE_EVENT);}});
+            currentRow = null;
+            currentRowIndex = -1;
             aRowIsSelected = false;
-
-            System.out.println(deletedEntriesUndo);
         }
     }
 
@@ -220,8 +228,10 @@ public class BMMainScreen implements Initializable {
     }
 
     public void confirmChanges() {
-        editedEntriesUndo.add((HashMap)((HashMap) currentRow).clone());
-        undoEventStack.add(EDIT_EVENT);
+        Map<Key, Object> editedEntry = (HashMap)((HashMap) currentRow).clone();
+        deleteDuplicates(editedEntriesUndo, undoEventStack, editedEntry);
+        editedEntriesUndo.add(editedEntry);
+        undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, EDIT_EVENT);}});
         bmEditEntry.changeEntry(entries);
         displayEntries(searchKeyword);
         if (currentRow != null) {
@@ -253,78 +263,102 @@ public class BMMainScreen implements Initializable {
     }
 
     private void undo() {
-        System.out.println(undoEventStack);
         if (!undoEventStack.empty()) {
-            switch (undoEventStack.pop()) {
+            switch ((String) undoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
-                    Map<Key, Object> entryToBeRemoved = addedEntriesUndo.pop();
-                    entries.remove(entryToBeRemoved);
-                    addedEntriesRedo.add(entryToBeRemoved);
-                    redoEventStack.add(ADD_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!addedEntriesUndo.empty()) {
+                        Map<Key, Object> entryToBeRemoved = addedEntriesUndo.pop();
+                        entries.remove(entryToBeRemoved);
+                        deleteDuplicates(addedEntriesRedo, redoEventStack, entryToBeRemoved);
+                        addedEntriesRedo.add(entryToBeRemoved);
+                        redoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
+                            put(entryToBeRemoved, ADD_EVENT);
+                        }});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
 
                 case DELETE_EVENT:
-                    Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
-                    System.out.println(entryToBeAdded);
-                    bibTexKeyCheck(entries, entryToBeAdded);
-                    entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
-                    deletedEntriesRedo.add(entryToBeAdded);
-                    redoEventStack.add(DELETE_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!deletedEntriesUndo.empty()) {
+                        Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
+                        bibTexKeyCheck(entries, entryToBeAdded);
+                        entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
+                        deleteDuplicates(deletedEntriesRedo, redoEventStack, entryToBeAdded);
+                        deletedEntriesRedo.add(entryToBeAdded);
+                        redoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
+                            put(entryToBeAdded, DELETE_EVENT);
+                        }});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
 
                 case EDIT_EVENT:
-                    Map<Key, Object> demodifiedEntry = editedEntriesUndo.pop();
-//                    bibTexKeyCheck(entries, demodifiedEntry);
-                    int entryIndex = (int) demodifiedEntry.get(new Key("rownumber")) - 1;
-                    Map<Key, Object> modifiedEntry = entries.get(entryIndex);
-                    entries.set(entryIndex, demodifiedEntry);
-                    editedEntriesRedo.add(modifiedEntry);
-                    redoEventStack.add(EDIT_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!editedEntriesUndo.empty()) {
+                        Map<Key, Object> demodifiedEntry = editedEntriesUndo.pop();
+                        bibTexKeyCheck(entries, demodifiedEntry);
+                        int entryIndex = (int) demodifiedEntry.get(new Key("rownumber")) - 1;
+                        Map<Key, Object> modifiedEntry = entries.get(entryIndex);
+                        entries.set(entryIndex, demodifiedEntry);
+                        deleteDuplicates(editedEntriesRedo, redoEventStack, demodifiedEntry);
+                        editedEntriesRedo.add(modifiedEntry);
+                        redoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
+                            put(demodifiedEntry, EDIT_EVENT);
+                        }});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
             }
         }
     }
 
     private void redo() {
-        System.out.println(redoEventStack);
         if (!redoEventStack.empty()) {
-            switch (redoEventStack.pop()) {
+            switch ((String) redoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
-                    Map<Key, Object> entryToBeAdded = addedEntriesRedo.pop();
-                    bibTexKeyCheck(entries, entryToBeAdded);
-                    entries.add(entryToBeAdded);
-                    addedEntriesUndo.add(entryToBeAdded);
-                    undoEventStack.add(ADD_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!addedEntriesRedo.empty()) {
+                        Map<Key, Object> entryToBeAdded = addedEntriesRedo.pop();
+                        bibTexKeyCheck(entries, entryToBeAdded);
+                        entries.add(entryToBeAdded);
+                        deleteDuplicates(addedEntriesUndo, undoEventStack, entryToBeAdded);
+                        addedEntriesUndo.add(entryToBeAdded);
+                        undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(entryToBeAdded, ADD_EVENT);}});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
 
                 case DELETE_EVENT:
-                    Map<Key, Object> entryToBeRemoved = deletedEntriesRedo.pop();
-                    entries.remove(entryToBeRemoved);
-                    deletedEntriesUndo.add(entryToBeRemoved);
-                    undoEventStack.add(DELETE_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!deletedEntriesRedo.empty()) {
+                        Map<Key, Object> entryToBeRemoved = deletedEntriesRedo.pop();
+                        entries.remove(entryToBeRemoved);
+                        deleteDuplicates(deletedEntriesUndo, undoEventStack, entryToBeRemoved);
+                        deletedEntriesUndo.add(entryToBeRemoved);
+                        undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
+                            put(entryToBeRemoved, DELETE_EVENT);
+                        }});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
 
                 case EDIT_EVENT:
-                    Map<Key, Object> modifiedEntry = editedEntriesRedo.pop();
-                    bibTexKeyCheck(entries, modifiedEntry);
-
-                    int entryIndex = (int) modifiedEntry.get(new Key("rownumber")) - 1;
-                    Map<Key, Object> demodifiedEntry = entries.get(entryIndex);
-                    entries.set(entryIndex, modifiedEntry);
-                    editedEntriesUndo.add(demodifiedEntry);
-                    undoEventStack.add(EDIT_EVENT);
-                    resetRowNumbers();
-                    displayEntries("");
+                    if (!editedEntriesRedo.empty()) {
+                        Map<Key, Object> modifiedEntry = editedEntriesRedo.pop();
+                        bibTexKeyCheck(entries, modifiedEntry);
+                        int entryIndex = (int) modifiedEntry.get(new Key("rownumber")) - 1;
+                        Map<Key, Object> demodifiedEntry = entries.get(entryIndex);
+                        entries.set(entryIndex, modifiedEntry);
+                        deleteDuplicates(editedEntriesUndo, undoEventStack, demodifiedEntry);
+                        editedEntriesUndo.add(demodifiedEntry);
+                        undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
+                            put(modifiedEntry, EDIT_EVENT);
+                        }});
+                        resetRowNumbers();
+                        displayEntries("");
+                    }
                     break;
             }
         }
@@ -339,6 +373,19 @@ public class BMMainScreen implements Initializable {
                 key = key + random.nextInt(1000);
                 entry.put(BibTeXEntry.KEY_KEY, key);
                 bibTexKeyCheck(entries, entry);
+            }
+        }
+    }
+
+    private void deleteDuplicates(Stack<Map<Key, Object>> stack, Stack<Map<Map<Key, Object>, String>> eventStack, Map<Key, Object> entry) {
+        if (!stack.empty() && !eventStack.empty()) {
+            for (int i = 0; i < stack.size(); i++) {
+                Map<Key, Object> currEntry = stack.get(i);
+                if (currEntry == entry) {
+                    stack.remove(currEntry);
+                    eventStack.remove(currEntry);
+                    deleteDuplicates(stack, eventStack, entry);
+                }
             }
         }
     }
@@ -379,5 +426,11 @@ public class BMMainScreen implements Initializable {
 //        redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
         undoBtn.setOnAction(evt -> undo());
         redoBtn.setOnAction(evt -> redo());
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Dimension dimensions = kit.getScreenSize();
+        double screenHeight = dimensions.getHeight();
+        double screenWidth = dimensions.getWidth();
+        mainBorderPane.setPrefWidth(screenWidth/1.5);
+        mainBorderPane.setPrefHeight(screenHeight/2);
     }
 }
