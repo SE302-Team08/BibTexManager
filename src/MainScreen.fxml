@@ -206,6 +206,7 @@
                         <SeparatorMenuItem mnemonicParsing="false" />
                                 
                                 <MenuItem fx:id="openLibraryMenuItem" mnemonicParsing="false" onAction="#openLibrary" text="Open BibTex Library" />
+                        <MenuItem mnemonicParsing="false" onAction="#openLibraryDirectory" text="Open Library Directory" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                                 <MenuItem fx:id="addEntryMenuItem" mnemonicParsing="false" onAction="#addEntry" text="Add Entry" />
                         <SeparatorMenuItem mnemonicParsing="false" />
@@ -235,11 +236,11 @@
                 </MenuBar>
                 <HBox prefHeight="13.0" prefWidth="1293.0">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#addEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true">
+                        <Button mnemonicParsing="false" onAction="#addEntry" text="Add Entry" textAlignment="CENTER" wrapText="true">
                      <HBox.margin>
                         <Insets right="3.0" />
                      </HBox.margin></Button>
-                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true">
+                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" text="Delete Entry" textAlignment="CENTER" wrapText="true">
                      <HBox.margin>
                         <Insets right="3.0" />
                      </HBox.margin></Button>
@@ -253,7 +254,18 @@
                      </HBox.margin></Button>
                         <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
                         <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" text="Optional Fields" textAlignment="CENTER" />
-                        <HBox prefHeight="25.0" prefWidth="332.0" HBox.hgrow="ALWAYS" />
+                        <HBox prefHeight="25.0" prefWidth="332.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <AnchorPane HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label fx:id="libraryName" alignment="CENTER" contentDisplay="CENTER" layoutX="152.0" layoutY="4.0" text="Library name: None" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children></HBox>
                   <Button mnemonicParsing="false" onAction="#scrollTop" text="Scroll Top">
                      <HBox.margin>
                         <Insets right="3.0" />

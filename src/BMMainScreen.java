@@ -1,12 +1,11 @@
-import javafx.animation.PauseTransition;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.input.KeyCode;
@@ -14,24 +13,18 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
+import javafx.scene.text.Text;
 import org.jbibtex.*;
 import org.w3c.dom.Document;
 
-import javax.security.auth.kerberos.DelegationPermission;
 import java.awt.*;
-import java.net.URL;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 
 
-public class BMMainScreen implements Initializable {
-//    @FXML private Button createButton;
-//    @FXML private Button deleteButton;
-//    @FXML private MenuItem addEntryMenuItem;
-//    @FXML private MenuItem createLibraryMenuItem;
+public class BMMainScreen {
     @FXML private TableView<Map> tableView;
     @FXML private TableColumn<Map, Integer> numberColumn;
     @FXML private TableColumn<Map, String> entryTypeColumn;
@@ -45,8 +38,7 @@ public class BMMainScreen implements Initializable {
     @FXML private GridPane entryEditField;
     @FXML private ChoiceBox entryTypeChoiceBox;
     @FXML private Button confirmButton;
-    @FXML private Button undoBtn;
-    @FXML private Button redoBtn;
+    @FXML private Label libraryName;
 
     private BMEditEntry bmEditEntry;
     private BMConfig config;
@@ -67,7 +59,9 @@ public class BMMainScreen implements Initializable {
     private final String ADD_EVENT = "add_event";
     private final String DELETE_EVENT = "delete_event";
     private final String EDIT_EVENT = "edit_event";
-    private boolean aChangeIsMade = false;
+    private final ButtonType buttonTypeYes = new ButtonType("Yes");
+    private final ButtonType buttonTypeNo = new ButtonType("No");
+    public static boolean aChangeIsMade = false;
     public static CheckBox optionalFields;
 
     private KeyCombination deleteKC = new KeyCodeCombination(KeyCode.DELETE);
@@ -82,45 +76,56 @@ public class BMMainScreen implements Initializable {
     @FXML
     private void createLibrary() {
         if (aChangeIsMade) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Changed Library");
-            alert.setHeaderText("Currently open library is not saved. Do you want to save?");
-//            alert.setContentText("Currently open library is not saved. Do you want to save?");
+            Optional<ButtonType> result = showConfirmation();
+            if (result.isPresent()) {
+                if (result.get() == buttonTypeNo) {
+                    aChangeIsMade = false;
+                    BMParser.library = null;
+                    libraryName.setText("Library name: Not Named Yet");
 
-            ButtonType buttonTypeYes = new ButtonType("Yes");
-            ButtonType buttonTypeNo = new ButtonType("No");
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    clearUndoRedoStacks();
+                    mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
-            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes){
-                // ... user chose "One"
-            } else if (result.get() == buttonTypeNo) {
-                // ... user chose "Two"
-            } else {
-                // ... user chose CANCEL or closed the dialog
+                    entries = new ArrayList<>();
+                    tableView.getItems().clear();
+                    Toast.showToast("New Library Created");
+                }
             }
+        } else {
+            BMParser.library = null;
+            libraryName.setText("Library name: Not Named Yet");
+
+            clearUndoRedoStacks();
+            mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+
+            entries = new ArrayList<>();
+            tableView.getItems().clear();
+            Toast.showToast("New Library Created");
         }
     }
 
     @FXML
     private void saveLibrary() {
-        System.out.println(entries.get(entries.size() - 1));
         BMFormatter.saveLibrary(entries);
-        Toast.showToast("Library Saved");
+        if (BMParser.library != null && BMParser.library.getName().length() > 0) {
+            libraryName.setText("Library name: " + BMParser.library.getName());
+        }
     }
 
     @FXML
     private void saveLibraryAs() {
         BMFormatter.saveLibraryAs(entries);
-        Toast.showToast("Library Saved As");
+        aChangeIsMade = false;
+        if (BMParser.library != null && BMParser.library.getName().length() > 0) {
+            libraryName.setText("Library name: " + BMParser.library.getName());
+        }
     }
 
     @FXML
     private void addEntry() {
         confirmButton.setText("Add");
         entryTypeChoiceBox.getSelectionModel().select(0);
+        Toast.showToast("Add Entry From Below");
 
         BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoiceBox);
 
@@ -179,21 +184,66 @@ public class BMMainScreen implements Initializable {
 
     @FXML
     private void openLibrary() {
-        BMParser parser = new BMParser();
-        ArrayList<Map<Key, Object>> tmpEntries = null;
-        if (entries != null) {
-           tmpEntries = (ArrayList<Map<Key, Object>>) entries.clone();
-        }
-        entries = parser.readBibTexLibrary(null);
+        if (aChangeIsMade) {
+            Optional<ButtonType> result = showConfirmation();
+            if (result.isPresent()) {
+                if (result.get() == buttonTypeNo) {
+                    BMParser parser = new BMParser();
+                    ArrayList<Map<Key, Object>> tmpEntries = null;
+                    if (entries != null) {
+                        tmpEntries = (ArrayList<Map<Key, Object>>) entries.clone();
+                    }
+                    entries = parser.readBibTexLibrary(null);
 
-        if (entries == null && tmpEntries != null) {
-            entries = tmpEntries;
-        } else if (entries == null) {
-            Toast.showToast("File is corrupted");
-        }
+                    if (entries == null && tmpEntries != null) {
+                        entries = tmpEntries;
+                        clearUndoRedoStacks();
+                    } else if (entries == null) {
+                        Toast.showToast("File is corrupted");
+                    }
 
-        aRowIsSelected = false;
-        displayEntries("");
+                    if (BMParser.library != null) {
+                        libraryName.setText("Library name: " + BMParser.library.getName());
+                    }
+                    aRowIsSelected = false;
+                    displayEntries("");
+                }
+            }
+
+        } else {
+            BMParser parser = new BMParser();
+            ArrayList<Map<Key, Object>> tmpEntries = null;
+            if (entries != null) {
+                tmpEntries = (ArrayList<Map<Key, Object>>) entries.clone();
+            }
+            entries = parser.readBibTexLibrary(null);
+
+            if (entries == null && tmpEntries != null) {
+                entries = tmpEntries;
+                clearUndoRedoStacks();
+            } else if (entries == null) {
+                Toast.showToast("File is corrupted");
+            }
+
+            if (BMParser.library != null) {
+                libraryName.setText("Library name: " + BMParser.library.getName());
+            }
+            aRowIsSelected = false;
+            displayEntries("");
+        }
+    }
+
+    @FXML
+    private void openLibraryDirectory() {
+        if (BMParser.library != null && BMParser.library.getName().length() > 0) {
+            try {
+                Runtime.getRuntime().exec("explorer.exe /select," + BMParser.library.getPath());
+            } catch (IOException e) {
+                Toast.showToast("Cannot Open Directory");
+            }
+        } else {
+            Toast.showToast("No Library");
+        }
     }
 
     @FXML
@@ -263,7 +313,7 @@ public class BMMainScreen implements Initializable {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
                 currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
 
-                if (mainBorderPane.getBottom() == null) {
+                if (mainBorderPane.getBottom() == null && currentRow != null) {
                     mainBorderPane.setBottom(entryEditField);
                 }
 
@@ -296,16 +346,18 @@ public class BMMainScreen implements Initializable {
 
     @FXML
     private void confirmChanges() {
-        Map<Key, Object> editedEntry = (HashMap)((HashMap) currentRow).clone();
-        deleteDuplicates(editedEntriesUndo, undoEventStack, editedEntry);
-        editedEntriesUndo.add(editedEntry);
-        undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, EDIT_EVENT);}});
-        bmEditEntry.changeEntry(entries);
-        aChangeIsMade = true;
-        displayEntries(searchKeyword);
-        Toast.showToast("Entry Changed");
         if (currentRow != null) {
-            tableView.getSelectionModel().select(currentRow);
+            Map<Key, Object> editedEntry = (HashMap)((HashMap) currentRow).clone();
+            deleteDuplicates(editedEntriesUndo, undoEventStack, editedEntry);
+            editedEntriesUndo.add(editedEntry);
+            undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, EDIT_EVENT);}});
+            bmEditEntry.changeEntry(entries);
+            aChangeIsMade = true;
+            displayEntries(searchKeyword);
+            Toast.showToast("Entry Changed");
+            if (currentRow != null) {
+                tableView.getSelectionModel().select(currentRow);
+            }
         }
     }
 
@@ -480,6 +532,26 @@ public class BMMainScreen implements Initializable {
         }
     }
 
+    private void clearUndoRedoStacks() {
+        deletedEntriesUndo.clear();
+        deletedEntriesRedo.clear();
+        editedEntriesUndo.clear();
+        editedEntriesRedo.clear();
+        addedEntriesUndo.clear();
+        addedEntriesRedo.clear();
+        undoEventStack.clear();
+        redoEventStack.clear();
+    }
+
+    private Optional<ButtonType> showConfirmation() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Changed Library");
+        alert.setHeaderText("Currently open library is not saved. Do you want to save?");
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+        return alert.showAndWait();
+    }
+
     @FXML
     private void forgetLastOpenedLibrary() {
         config = new BMConfig();
@@ -502,15 +574,45 @@ public class BMMainScreen implements Initializable {
 
     @FXML
     private void closeCurrentLibrary() {
-        tableView.getItems().clear();
-        currentRow = null;
-        currentRowIndex = -1;
-        aRowIsSelected = false;
-        entries = null;
+        if (aChangeIsMade) {
+            Optional<ButtonType> result = showConfirmation();
+            if (result.isPresent()) {
+                if (result.get() == buttonTypeNo) {
+                    tableView.getSelectionModel().clearSelection();
+                    tableView.getItems().clear();
+
+                    BMParser.library = null;
+                    libraryName.setText("Library name: No Library");
+
+                    mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+
+                    clearUndoRedoStacks();
+                    aChangeIsMade = false;
+                    entries = null;
+                    currentRow = null;
+                    currentRowIndex = -1;
+                    aRowIsSelected = false;
+                }
+            }
+        } else {
+            tableView.getSelectionModel().clearSelection();
+            tableView.getItems().clear();
+
+            BMParser.library = null;
+            libraryName.setText("Library name: No Library");
+
+            mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+
+            clearUndoRedoStacks();
+            entries = null;
+            currentRow = null;
+            currentRowIndex = -1;
+            aRowIsSelected = false;
+        }
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
         titleColumn.setCellFactory(TooltippedTableCell.forTableColumn());
@@ -541,6 +643,12 @@ public class BMMainScreen implements Initializable {
         entryTypeChoiceBox.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
+
+        if (BMParser.library != null && BMParser.library.getName().length() > 0) {
+            libraryName.setText("Library name: " + BMParser.library.getName());
+        } else {
+            libraryName.setText("Library name: No Library");
+        }
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dimensions = kit.getScreenSize();

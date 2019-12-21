@@ -11,7 +11,12 @@ import java.util.Map;
 public class BMFormatter {
     public static void saveLibrary(ArrayList<Map<Key, Object>> entries) {
         File library = BMParser.library;
+        if (library == null || library.getName().length() < 1) {
+            saveLibraryAs(entries);
+            return;
+        }
         addEntriesToDatabaseAndSave(library, entries);
+        Toast.showToast("Library Saved");
     }
 
     public static void saveLibraryAs(ArrayList<Map<Key, Object>> entries) {
@@ -26,6 +31,11 @@ public class BMFormatter {
 
         if (library != null) {
             addEntriesToDatabaseAndSave(library, entries);
+            BMParser.library = library;
+            new BMConfig().setProps(library);
+            if (entries.size() > 0) {
+                Toast.showToast("Library Saved As");
+            }
         } else {
             Toast.showToast("No File Selected");
         }
@@ -54,9 +64,12 @@ public class BMFormatter {
                     database.addObject(newEntry);
                 }
                 formatter.format(database, writer);
-
+                BMMainScreen.aChangeIsMade = false;
             } catch (IOException e) {
-                e.printStackTrace();
+                Toast.showToast("Could Not Save Library");
+            } catch (NullPointerException e) {
+                BMMainScreen.aChangeIsMade = false;
+                Toast.showToast("Library Saved Without Entries");
             }
         }
     }

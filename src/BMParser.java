@@ -1,3 +1,4 @@
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.jbibtex.*;
 
@@ -18,7 +19,6 @@ public class BMParser {
         try {
             // A file with the exact location of the bib file is created. The location is stored in bibFilePath
             if (filePath == null) {
-
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Open BibTex Library");
 
@@ -52,13 +52,13 @@ public class BMParser {
                 new BMConfig().setProps(library);
                 getEntries();
 
+                BMMainScreen.aChangeIsMade = false;
                 return entriesList;
             }
-
         } catch (org.jbibtex.ParseException e) {
             Toast.showToast("File is corrupted");
         } catch (IOException e) {
-            System.err.println("There is an error related to the bib file. Please check the location of the bib file");
+            new BMConfig().setProps(null);
         }
 
         return null;
