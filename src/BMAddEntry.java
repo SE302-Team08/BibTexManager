@@ -60,8 +60,10 @@ public class BMAddEntry {
 
                 if (index > -1) {
                     entries.add(index, newEntry);
+                    Toast.showToast("Entry Added");
                 } else {
                     entries.add(newEntry);
+                    Toast.showToast("Entry Added");
                 }
             }
         } else {

@@ -13,7 +13,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import org.jbibtex.*;
 import org.w3c.dom.Document;
 
@@ -80,6 +79,7 @@ public class BMMainScreen {
             if (result.isPresent()) {
                 if (result.get() == buttonTypeNo) {
                     aChangeIsMade = false;
+                    keepLastDeletedEntryFields = false;
                     BMParser.library = null;
                     libraryName.setText("Library name: Not Named Yet");
 
@@ -93,6 +93,7 @@ public class BMMainScreen {
             }
         } else {
             BMParser.library = null;
+            keepLastDeletedEntryFields = false;
             libraryName.setText("Library name: Not Named Yet");
 
             clearUndoRedoStacks();
@@ -131,20 +132,30 @@ public class BMMainScreen {
 
         confirmButton.setOnAction(event -> {
             bmAddEntry.addEntry(currentRowIndex, entries);
-            aChangeIsMade = true;
-            resetRowNumbers();
-            displayEntries("");
-            Toast.showToast("Entry Added");
+
             Map<Key, Object> addedEntry;
-            if (currentRowIndex < 0) {
-                tableView.scrollTo(entries.size());
-                addedEntry = entries.get(entries.size() - 1);
-            } else {
-                addedEntry = entries.get(currentRowIndex);
+            if (entries != null) {
+                resetRowNumbers();
+                displayEntries("");
+
+                aChangeIsMade = true;
+
+                if (currentRowIndex < 0) {
+                    tableView.scrollTo(entries.size());
+
+                    if (entries.size() - 1 >= 0) {
+                        addedEntry = entries.get(entries.size() - 1);
+                    } else {
+                        return;
+                    }
+                } else {
+                    addedEntry = entries.get(currentRowIndex);
+                }
+
+                deleteDuplicates(addedEntriesUndo, undoEventStack, addedEntry);
+                addedEntriesUndo.add(addedEntry);
+                undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(addedEntry, ADD_EVENT);}});
             }
-            deleteDuplicates(addedEntriesUndo, undoEventStack, addedEntry);
-            addedEntriesUndo.add(addedEntry);
-            undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(addedEntry, ADD_EVENT);}});
         });
 
         if (bmEditEntry == null) {
@@ -198,6 +209,7 @@ public class BMMainScreen {
                     if (entries == null && tmpEntries != null) {
                         entries = tmpEntries;
                         clearUndoRedoStacks();
+                        keepLastDeletedEntryFields = false;
                     } else if (entries == null) {
                         Toast.showToast("File is corrupted");
                     }
@@ -221,6 +233,7 @@ public class BMMainScreen {
             if (entries == null && tmpEntries != null) {
                 entries = tmpEntries;
                 clearUndoRedoStacks();
+                keepLastDeletedEntryFields = false;
             } else if (entries == null) {
                 Toast.showToast("File is corrupted");
             }
@@ -286,40 +299,42 @@ public class BMMainScreen {
         BMMain.scene.getAccelerators().put(deleteKC, deleteRN);
         BMMain.scene.getAccelerators().put(undoKC, undoRN);
         BMMain.scene.getAccelerators().put(redoKC, redoRN);
-        currentRow = null;
-        confirmButton.setText("Change");
+        if (entries != null && entries.size() > 0) {
+            currentRow = null;
+            confirmButton.setText("Change");
 
-        if (bmEditEntry != null) {
-            confirmButton.setOnAction(event -> confirmChanges());
-        }
-
-        if (!aRowIsSelected) {
-            currentRow = tableView.getSelectionModel().getSelectedItem();
-            currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
-            aRowIsSelected = true;
-
-            if (currentRow != null) {
-                fillEntryEditField(currentRow.entrySet());
-                mainBorderPane.setBottom(entryEditField);
+            if (bmEditEntry != null) {
+                confirmButton.setOnAction(event -> confirmChanges());
             }
-        } else {
-            if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
-                tableView.getSelectionModel().clearSelection();
-                mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
-                aRowIsSelected = false;
-                currentRowIndex = -1;
-                currentRow = null;
-            } else {
+
+            if (!aRowIsSelected) {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
                 currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+                aRowIsSelected = true;
 
-                if (mainBorderPane.getBottom() == null && currentRow != null) {
+                if (currentRow != null) {
+                    fillEntryEditField(currentRow.entrySet());
                     mainBorderPane.setBottom(entryEditField);
                 }
+            } else {
+                if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
+                    tableView.getSelectionModel().clearSelection();
+                    mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
+                    aRowIsSelected = false;
+                    currentRowIndex = -1;
+                    currentRow = null;
+                } else {
+                    currentRow = tableView.getSelectionModel().getSelectedItem();
+                    currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
 
-                if (currentRow != null)
-                    fillEntryEditField(currentRow.entrySet());
+                    if (mainBorderPane.getBottom() == null && currentRow != null) {
+                        mainBorderPane.setBottom(entryEditField);
+                    }
 
+                    if (currentRow != null)
+                        fillEntryEditField(currentRow.entrySet());
+
+                }
             }
         }
     }
@@ -377,10 +392,12 @@ public class BMMainScreen {
     }
 
     private void resetRowNumbers() {
-        if (currentRowIndex != entries.size()) {
-            int rowNumber = 1;
-            for (Map<Key, Object> entry: entries) {
-                entry.put(new Key("rownumber"), rowNumber++);
+        if (entries != null) {
+            if (currentRowIndex != entries.size()) {
+                int rowNumber = 1;
+                for (Map<Key, Object> entry: entries) {
+                    entry.put(new Key("rownumber"), rowNumber++);
+                }
             }
         }
     }
@@ -587,6 +604,7 @@ public class BMMainScreen {
                     mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
                     clearUndoRedoStacks();
+                    keepLastDeletedEntryFields = false;
                     aChangeIsMade = false;
                     entries = null;
                     currentRow = null;
@@ -604,6 +622,7 @@ public class BMMainScreen {
             mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
             clearUndoRedoStacks();
+            keepLastDeletedEntryFields = false;
             entries = null;
             currentRow = null;
             currentRowIndex = -1;
