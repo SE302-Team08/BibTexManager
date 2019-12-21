@@ -42,6 +42,16 @@ public class BMConfig {
             } catch (IOException | SAXException e) {
                 e.printStackTrace();
             }
+        } else {
+            props.setProperty("lastOpenedFile", "");
+            try {
+                OutputStream os = new FileOutputStream(propsFile);
+                props.storeToXML(os, "User Configuration");
+
+                propsDocument = documentBuilder.parse(propsFile);
+            } catch (IOException | SAXException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -49,7 +59,7 @@ public class BMConfig {
         try {
             propsDocument = documentBuilder.parse(propsFile);
         } catch (IOException | SAXException e) {
-            System.out.println("No last opened files were found.");
+            e.printStackTrace();
         }
         return propsDocument;
     }

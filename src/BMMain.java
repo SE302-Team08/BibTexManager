@@ -27,7 +27,8 @@ public class BMMain extends Application {
 
     @Override
     public void stop() {
-        BMConfig config = new BMConfig();
-        config.setProps(new BMParser().getFile());
+//        BMConfig config = new BMConfig();
+//        config.setProps(new BMParser().getFile());
+//        System.out.println(new BMParser().getFile());
     }
 }

@@ -23,45 +23,50 @@ public class BMAddEntry {
     }
 
     public void addEntry(int index, List<Map<Key, Object>> entries) {
-        numberOfEntries = entries.size();
-        String key;
-        String value;
+        if (entries != null) {
+            numberOfEntries = entries.size();
+            String key;
+            String value;
 
-        if (checkRequiredFields()) {
-            newEntry = new KeyMap<>();
-            if (index > -1) {
-                newEntry.put(new Key("rownumber"), index);
-            } else {
-                newEntry.put(new Key("rownumber"), entries.size() + 1);
-            }
-            String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
-            newEntry.put(new Key("type"), selectedType);
-            String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType);
-            int numberOfFields = Integer.parseInt(entryFieldOptions[0]) + Integer.parseInt(entryFieldOptions[1]);
+            if (checkRequiredFields()) {
+                newEntry = new KeyMap<>();
+                if (index > -1) {
+                    newEntry.put(new Key("rownumber"), index);
+                } else {
+                    newEntry.put(new Key("rownumber"), entries.size() + 1);
+                }
+                String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
+                newEntry.put(new Key("type"), selectedType);
+                String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType);
+                int numberOfFields = Integer.parseInt(entryFieldOptions[0]) + Integer.parseInt(entryFieldOptions[1]);
 
-            for (int i = 0; i < numberOfFields * 2; ) {
-                TextArea textArea = (TextArea) editField.getChildren().get(i++);
-                Label label = (Label) editField.getChildren().get(i++);
+                for (int i = 0; i < numberOfFields * 2; ) {
+                    TextArea textArea = (TextArea) editField.getChildren().get(i++);
+                    Label label = (Label) editField.getChildren().get(i++);
 
-                key = label.getText().toLowerCase();
-                value = textArea.getText();
+                    key = label.getText().toLowerCase();
+                    value = textArea.getText();
 
-                if (key.equals("key")) {
-                    value = bibTexKeyCheck(entries, value);
+                    if (key.equals("key")) {
+                        value = bibTexKeyCheck(entries, value);
+                    }
+
+                    if (!value.equals("")) {
+                        value = value.replace("\n", " ");
+
+                        newEntry.put(new Key(key), value);
+                    }
                 }
 
-                if (!value.equals("")) {
-                    value = value.replace("\n", " ");
-
-                    newEntry.put(new Key(key), value);
+                if (index > -1) {
+                    entries.add(index, newEntry);
+                } else {
+                    entries.add(newEntry);
                 }
             }
-
-            if (index > -1) {
-                entries.add(index, newEntry);
-            } else {
-                entries.add(newEntry);
-            }
+        } else {
+            Toast.showToast("No Library");
+            BMMain.stage.requestFocus();
         }
     }
 

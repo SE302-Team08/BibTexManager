@@ -14,7 +14,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="303.0" prefWidth="833.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BMMainScreen">
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="594.0" prefWidth="1102.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BMMainScreen">
     <bottom>
         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
@@ -202,15 +202,25 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem fx:id="createLibraryMenuItem" mnemonicParsing="false" text="Create BibTex Library" />
+                                <MenuItem fx:id="createLibraryMenuItem" mnemonicParsing="false" onAction="#createLibrary" text="Create BibTex Library" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                                
                                 <MenuItem fx:id="openLibraryMenuItem" mnemonicParsing="false" onAction="#openLibrary" text="Open BibTex Library" />
-                                <MenuItem fx:id="addNewEntryMenuItem" mnemonicParsing="false" text="Add New Entry" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem fx:id="addEntryMenuItem" mnemonicParsing="false" onAction="#addEntry" text="Add Entry" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveLibrary" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveLibraryAs" text="Save As" />
+                                <MenuItem fx:id="forgetLastOpenedFile" mnemonicParsing="false" onAction="#forgetLastOpenedLibrary" text="Forget Last Opened Library" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeCurrentLibrary" text="Close Current Library" />
                                 <MenuItem mnemonicParsing="false" text="Close" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Delete" />
+                                <MenuItem mnemonicParsing="false" onAction="#undo" text="Undo" />
+                        <MenuItem mnemonicParsing="false" onAction="#redo" text="Redo" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
@@ -225,13 +235,35 @@
                 </MenuBar>
                 <HBox prefHeight="13.0" prefWidth="1293.0">
                     <children>
-                        <Button mnemonicParsing="false" onAction="#addEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true" />
-                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true" />
-                        <Button fx:id="undoBtn" mnemonicParsing="false" text="Undo" />
-                        <Button fx:id="redoBtn" mnemonicParsing="false" text="Redo" />
+                        <Button mnemonicParsing="false" onAction="#addEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Add Entry" textAlignment="CENTER" wrapText="true">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin></Button>
+                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteEntry" style="-fx-background-image: url('Images/green-plus.png');" text="Delete Entry" textAlignment="CENTER" wrapText="true">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin></Button>
+                        <Button mnemonicParsing="false" onAction="#undo" text="Undo">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin></Button>
+                        <Button mnemonicParsing="false" onAction="#redo" text="Redo">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin></Button>
                         <Separator nodeOrientation="LEFT_TO_RIGHT" opacity="0.0" orientation="VERTICAL" prefHeight="200.0" />
                         <CheckBox fx:id="optionalFields" mnemonicParsing="false" onAction="#optionalFieldsSelected" prefHeight="25.0" text="Optional Fields" textAlignment="CENTER" />
-                        <HBox prefHeight="25.0" prefWidth="435.0" HBox.hgrow="ALWAYS" />
+                        <HBox prefHeight="25.0" prefWidth="332.0" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" onAction="#scrollTop" text="Scroll Top">
+                     <HBox.margin>
+                        <Insets right="3.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#scrollBottom" text="Scroll Bottom">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                  </Button>
                         <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="17.0" text="🔍" textAlignment="CENTER" />
                         <TextField fx:id="searchBar" onKeyPressed="#searchInsideMap" onKeyReleased="#searchInsideMap" onKeyTyped="#searchInsideMap" prefHeight="25.0" prefWidth="215.0" promptText="Search with a keyword" style="-fx-background-radius: 80;" />
                     </children>

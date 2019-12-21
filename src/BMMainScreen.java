@@ -1,14 +1,21 @@
+import javafx.animation.PauseTransition;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import org.jbibtex.*;
 import org.w3c.dom.Document;
 
@@ -23,8 +30,7 @@ import java.util.List;
 public class BMMainScreen implements Initializable {
 //    @FXML private Button createButton;
 //    @FXML private Button deleteButton;
-//    @FXML private MenuItem addNewEntryMenuItem;
-//    @FXML private MenuItem openLibraryMenuItem;
+//    @FXML private MenuItem addEntryMenuItem;
 //    @FXML private MenuItem createLibraryMenuItem;
     @FXML private TableView<Map> tableView;
     @FXML private TableColumn<Map, Integer> numberColumn;
@@ -39,16 +45,11 @@ public class BMMainScreen implements Initializable {
     @FXML private GridPane entryEditField;
     @FXML private ChoiceBox entryTypeChoiceBox;
     @FXML private Button confirmButton;
-
     @FXML private Button undoBtn;
     @FXML private Button redoBtn;
-//    private EventStream<ChangeManager<?>> changes;
-//    private UndoManager<ChangeManager<?>> undoManager;
 
-
-    //    private BMFormatter formatter;
-    private BibTeXDatabase database;
     private BMEditEntry bmEditEntry;
+    private BMConfig config;
     private boolean aRowIsSelected = false;
     private int currentRowIndex = -1;
     private ArrayList<Map<Key, Object>> entries;
@@ -66,13 +67,57 @@ public class BMMainScreen implements Initializable {
     private final String ADD_EVENT = "add_event";
     private final String DELETE_EVENT = "delete_event";
     private final String EDIT_EVENT = "edit_event";
+    private boolean aChangeIsMade = false;
     public static CheckBox optionalFields;
 
-//    public void createLibrary() {
-//
-//    }
+    private KeyCombination deleteKC = new KeyCodeCombination(KeyCode.DELETE);
+    private Runnable deleteRN = this::deleteEntry;
 
-    public void addEntry() {
+    private KeyCombination undoKC = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
+    private Runnable undoRN = this::undo;
+
+    private KeyCombination redoKC = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
+    private Runnable redoRN = this::redo;
+
+    @FXML
+    private void createLibrary() {
+        if (aChangeIsMade) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Changed Library");
+            alert.setHeaderText("Currently open library is not saved. Do you want to save?");
+//            alert.setContentText("Currently open library is not saved. Do you want to save?");
+
+            ButtonType buttonTypeYes = new ButtonType("Yes");
+            ButtonType buttonTypeNo = new ButtonType("No");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeYes){
+                // ... user chose "One"
+            } else if (result.get() == buttonTypeNo) {
+                // ... user chose "Two"
+            } else {
+                // ... user chose CANCEL or closed the dialog
+            }
+        }
+    }
+
+    @FXML
+    private void saveLibrary() {
+        BMFormatter.saveLibrary(entries);
+        Toast.showToast("Library Saved");
+    }
+
+    @FXML
+    private void saveLibraryAs() {
+        BMFormatter.saveLibraryAs(entries);
+        Toast.showToast("Library Saved As");
+    }
+
+    @FXML
+    private void addEntry() {
         confirmButton.setText("Add");
         entryTypeChoiceBox.getSelectionModel().select(0);
 
@@ -80,8 +125,10 @@ public class BMMainScreen implements Initializable {
 
         confirmButton.setOnAction(event -> {
             bmAddEntry.addEntry(currentRowIndex, entries);
+            aChangeIsMade = true;
             resetRowNumbers();
             displayEntries("");
+            Toast.showToast("Entry Added");
             Map<Key, Object> addedEntry;
             if (currentRowIndex < 0) {
                 tableView.scrollTo(entries.size());
@@ -107,23 +154,30 @@ public class BMMainScreen implements Initializable {
         mainBorderPane.setBottom(entryEditField);
     }
 
-    public void deleteEntry() {
-        if (aRowIsSelected) {
+    @FXML
+    private void deleteEntry() {
+        if (aRowIsSelected && currentRow != null) {
             keepLastDeletedEntryFields = true;
 
             entries.remove(currentRowIndex);
+            aChangeIsMade = true;
             resetRowNumbers();
             displayEntries("");
+            Toast.showToast("Entry Deleted");
             deleteDuplicates(deletedEntriesUndo, undoEventStack, currentRow);
             deletedEntriesUndo.add(currentRow);
             undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, DELETE_EVENT);}});
             currentRow = null;
             currentRowIndex = -1;
             aRowIsSelected = false;
+        } else {
+            Toast.showToast("Nothing selected");
+            BMMain.stage.requestFocus();
         }
     }
 
-    public void openLibrary() {
+    @FXML
+    private void openLibrary() {
         BMParser parser = new BMParser();
         ArrayList<Map<Key, Object>> tmpEntries = null;
         if (entries != null) {
@@ -133,15 +187,16 @@ public class BMMainScreen implements Initializable {
 
         if (entries == null && tmpEntries != null) {
             entries = tmpEntries;
+        } else if (entries == null) {
+            Toast.showToast("File is corrupted");
         }
 
-        database = parser.getBibTeXDatabase();
         aRowIsSelected = false;
-
         displayEntries("");
     }
 
-    public void searchInsideMap() {
+    @FXML
+    private void searchInsideMap() {
         if (searchBar.getText() == null)
             searchKeyword = "";
         else
@@ -175,7 +230,11 @@ public class BMMainScreen implements Initializable {
         }
     }
 
-    public void rowSelected() {
+    @FXML
+    private void rowSelected() {
+        BMMain.scene.getAccelerators().put(deleteKC, deleteRN);
+        BMMain.scene.getAccelerators().put(undoKC, undoRN);
+        BMMain.scene.getAccelerators().put(redoKC, redoRN);
         currentRow = null;
         confirmButton.setText("Change");
 
@@ -192,7 +251,6 @@ public class BMMainScreen implements Initializable {
                 fillEntryEditField(currentRow.entrySet());
                 mainBorderPane.setBottom(entryEditField);
             }
-
         } else {
             if (tableView.getSelectionModel().isSelected(currentRowIndex)) {
                 tableView.getSelectionModel().clearSelection();
@@ -235,13 +293,16 @@ public class BMMainScreen implements Initializable {
         bmEditEntry.fillEntryEditFields();
     }
 
-    public void confirmChanges() {
+    @FXML
+    private void confirmChanges() {
         Map<Key, Object> editedEntry = (HashMap)((HashMap) currentRow).clone();
         deleteDuplicates(editedEntriesUndo, undoEventStack, editedEntry);
         editedEntriesUndo.add(editedEntry);
         undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, EDIT_EVENT);}});
         bmEditEntry.changeEntry(entries);
+        aChangeIsMade = true;
         displayEntries(searchKeyword);
+        Toast.showToast("Entry Changed");
         if (currentRow != null) {
             tableView.getSelectionModel().select(currentRow);
         }
@@ -252,7 +313,8 @@ public class BMMainScreen implements Initializable {
             bmEditEntry.typeChanged();
     }
 
-    public void optionalFieldsSelected() {
+    @FXML
+    private void optionalFieldsSelected() {
         optionalFields.setSelected(!optionalFields.isSelected());
         if (currentRow != null) {
             tableView.getSelectionModel().select(currentRow);
@@ -270,11 +332,13 @@ public class BMMainScreen implements Initializable {
         }
     }
 
+    @FXML
     private void undo() {
         if (!undoEventStack.empty()) {
             switch ((String) undoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
                     if (!addedEntriesUndo.empty()) {
+                        Toast.showToast("Undo");
                         Map<Key, Object> entryToBeRemoved = addedEntriesUndo.pop();
                         entries.remove(entryToBeRemoved);
                         deleteDuplicates(addedEntriesRedo, redoEventStack, entryToBeRemoved);
@@ -289,6 +353,7 @@ public class BMMainScreen implements Initializable {
 
                 case DELETE_EVENT:
                     if (!deletedEntriesUndo.empty()) {
+                        Toast.showToast("Undo");
                         Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
                         entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
@@ -304,6 +369,7 @@ public class BMMainScreen implements Initializable {
 
                 case EDIT_EVENT:
                     if (!editedEntriesUndo.empty()) {
+                        Toast.showToast("Undo");
                         Map<Key, Object> demodifiedEntry = editedEntriesUndo.pop();
                         bibTexKeyCheck(entries, demodifiedEntry);
                         int entryIndex = (int) demodifiedEntry.get(new Key("rownumber")) - 1;
@@ -318,15 +384,22 @@ public class BMMainScreen implements Initializable {
                         displayEntries("");
                     }
                     break;
+
+                default:
+                    Toast.showToast("No Undo");
             }
-        }
+        } else Toast.showToast("No Undo");
+        BMMain.stage.requestFocus(); // This is because after each CTRL + Z key combination the stage loses focus to
+                                     // toast message stage.
     }
 
+    @FXML
     private void redo() {
         if (!redoEventStack.empty()) {
             switch ((String) redoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
                     if (!addedEntriesRedo.empty()) {
+                        Toast.showToast("Redo");
                         Map<Key, Object> entryToBeAdded = addedEntriesRedo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
                         entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
@@ -340,6 +413,7 @@ public class BMMainScreen implements Initializable {
 
                 case DELETE_EVENT:
                     if (!deletedEntriesRedo.empty()) {
+                        Toast.showToast("Redo");
                         Map<Key, Object> entryToBeRemoved = deletedEntriesRedo.pop();
                         entries.remove(entryToBeRemoved);
                         deleteDuplicates(deletedEntriesUndo, undoEventStack, entryToBeRemoved);
@@ -354,6 +428,7 @@ public class BMMainScreen implements Initializable {
 
                 case EDIT_EVENT:
                     if (!editedEntriesRedo.empty()) {
+                        Toast.showToast("Redo");
                         Map<Key, Object> modifiedEntry = editedEntriesRedo.pop();
                         bibTexKeyCheck(entries, modifiedEntry);
                         int entryIndex = (int) modifiedEntry.get(new Key("rownumber")) - 1;
@@ -368,8 +443,14 @@ public class BMMainScreen implements Initializable {
                         displayEntries("");
                     }
                     break;
+
+                default:
+                    Toast.showToast("No Redo");
             }
-        }
+        } else Toast.showToast("No Redo");
+
+        BMMain.stage.requestFocus();// This is because after each CTRL + SHIFT + Z key combination the stage loses focus
+                                    // to toast message stage.
     }
 
     private void bibTexKeyCheck(List<Map<Key, Object>> entries, Map<Key, Object> entry) {
@@ -398,6 +479,35 @@ public class BMMainScreen implements Initializable {
         }
     }
 
+    @FXML
+    private void forgetLastOpenedLibrary() {
+        config = new BMConfig();
+        config.setProps(null);
+    }
+
+    @FXML
+    private void scrollTop() {
+        if (tableView != null) {
+            tableView.scrollTo(0);
+        }
+    }
+
+    @FXML
+    private void scrollBottom() {
+        if (tableView != null && entries != null) {
+            tableView.scrollTo(entries.size());
+        }
+    }
+
+    @FXML
+    private void closeCurrentLibrary() {
+        tableView.getItems().clear();
+        currentRow = null;
+        currentRowIndex = -1;
+        aRowIsSelected = false;
+        entries = null;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
@@ -420,7 +530,7 @@ public class BMMainScreen implements Initializable {
 
         BMConfig config = new BMConfig();
         Document propsDocument = config.getProps();
-        if (propsDocument != null) {
+        if (propsDocument != null && propsDocument.getElementsByTagName("entry").item(0) != null) {
             entries = new BMParser().readBibTexLibrary(propsDocument.getElementsByTagName("entry").item(0).getTextContent());
             displayEntries("");
         }
@@ -431,9 +541,6 @@ public class BMMainScreen implements Initializable {
                 .selectedItemProperty()
                 .addListener((ObservableValue observable, Object oldValue, Object newValue) -> typeChanged());
 
-//        redoBtn.disableProperty().bind(undoManager.redoAvailableProperty().map(x -> !x));
-        undoBtn.setOnAction(evt -> undo());
-        redoBtn.setOnAction(evt -> redo());
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dimensions = kit.getScreenSize();
         double screenHeight = dimensions.getHeight();
