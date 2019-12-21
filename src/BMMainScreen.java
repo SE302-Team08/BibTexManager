@@ -106,6 +106,7 @@ public class BMMainScreen implements Initializable {
 
     @FXML
     private void saveLibrary() {
+        System.out.println(entries.get(entries.size() - 1));
         BMFormatter.saveLibrary(entries);
         Toast.showToast("Library Saved");
     }

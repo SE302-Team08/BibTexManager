@@ -35,7 +35,7 @@ public class BMFormatter {
         if (library != null) {
             try {
                 BufferedWriter writer = new BufferedWriter(
-                        new FileWriter(library, true)
+                        new FileWriter(library, false)
                 );
 
                 BibTeXDatabase database = new BibTeXDatabase();
