@@ -60,9 +60,11 @@ public class BMAddEntry {
 
                 if (index > -1) {
                     entries.add(index, newEntry);
+                    BMMainScreen.aChangeIsMade = true;
                     Toast.showToast("Entry Added");
                 } else {
                     entries.add(newEntry);
+                    BMMainScreen.aChangeIsMade = true;
                     Toast.showToast("Entry Added");
                 }
             }

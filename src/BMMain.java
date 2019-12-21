@@ -30,13 +30,11 @@ public class BMMain extends Application {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Changed Library");
                 alert.setHeaderText("Currently open library is not saved. Do you want to save?");
-                ButtonType buttonTypeYes = new ButtonType("Yes");
-                ButtonType buttonTypeNo = new ButtonType("No");
-                alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+                alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CLOSE);
 
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent()) {
-                    if (result.get() == buttonTypeNo) {
+                    if (result.get() == ButtonType.NO) {
                         primaryStage.close();
                     }
                 }

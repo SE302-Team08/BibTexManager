@@ -138,6 +138,8 @@ public class BMEditEntry {
             selectedRow.put(BibTeXEntry.KEY_KEY, entryKey);
 
             entries.set(selectedIndex, selectedRow);
+            Toast.showToast("Entry Changed");
+            BMMainScreen.aChangeIsMade = true;
             previousEntryFields = BMEntry.entryTypesMap.get(selectedType);
         }
     }

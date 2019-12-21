@@ -58,8 +58,6 @@ public class BMMainScreen {
     private final String ADD_EVENT = "add_event";
     private final String DELETE_EVENT = "delete_event";
     private final String EDIT_EVENT = "edit_event";
-    private final ButtonType buttonTypeYes = new ButtonType("Yes");
-    private final ButtonType buttonTypeNo = new ButtonType("No");
     public static boolean aChangeIsMade = false;
     public static CheckBox optionalFields;
 
@@ -77,7 +75,7 @@ public class BMMainScreen {
         if (aChangeIsMade) {
             Optional<ButtonType> result = showConfirmation();
             if (result.isPresent()) {
-                if (result.get() == buttonTypeNo) {
+                if (result.get() == ButtonType.NO) {
                     aChangeIsMade = false;
                     keepLastDeletedEntryFields = false;
                     BMParser.library = null;
@@ -138,8 +136,6 @@ public class BMMainScreen {
                 resetRowNumbers();
                 displayEntries("");
 
-                aChangeIsMade = true;
-
                 if (currentRowIndex < 0) {
                     tableView.scrollTo(entries.size());
 
@@ -198,7 +194,7 @@ public class BMMainScreen {
         if (aChangeIsMade) {
             Optional<ButtonType> result = showConfirmation();
             if (result.isPresent()) {
-                if (result.get() == buttonTypeNo) {
+                if (result.get() == ButtonType.NO) {
                     BMParser parser = new BMParser();
                     ArrayList<Map<Key, Object>> tmpEntries = null;
                     if (entries != null) {
@@ -367,9 +363,8 @@ public class BMMainScreen {
             editedEntriesUndo.add(editedEntry);
             undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(currentRow, EDIT_EVENT);}});
             bmEditEntry.changeEntry(entries);
-            aChangeIsMade = true;
             displayEntries(searchKeyword);
-            Toast.showToast("Entry Changed");
+
             if (currentRow != null) {
                 tableView.getSelectionModel().select(currentRow);
             }
@@ -564,7 +559,7 @@ public class BMMainScreen {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Changed Library");
         alert.setHeaderText("Currently open library is not saved. Do you want to save?");
-        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CLOSE);
 
         return alert.showAndWait();
     }
@@ -594,7 +589,8 @@ public class BMMainScreen {
         if (aChangeIsMade) {
             Optional<ButtonType> result = showConfirmation();
             if (result.isPresent()) {
-                if (result.get() == buttonTypeNo) {
+                System.out.println(result.get());
+                if (result.get() == ButtonType.NO) {
                     tableView.getSelectionModel().clearSelection();
                     tableView.getItems().clear();
 
