@@ -22,14 +22,18 @@ public class BMAddEntry {
         this.entryTypeChoiceBox = entryTypeChoiceBox;
     }
 
-    public void addEntry(List<Map<Key, Object>> entries) {
+    public void addEntry(int index, List<Map<Key, Object>> entries) {
         numberOfEntries = entries.size();
         String key;
         String value;
 
         if (checkRequiredFields()) {
             newEntry = new KeyMap<>();
-            newEntry.put(new Key("rownumber"), entries.size() + 1);
+            if (index > -1) {
+                newEntry.put(new Key("rownumber"), index);
+            } else {
+                newEntry.put(new Key("rownumber"), entries.size() + 1);
+            }
             String selectedType = entryTypeChoiceBox.getSelectionModel().getSelectedItem().toString().toLowerCase();
             newEntry.put(new Key("type"), selectedType);
             String[] entryFieldOptions = BMEntry.entryTypesMap.get(selectedType);
@@ -53,7 +57,11 @@ public class BMAddEntry {
                 }
             }
 
-            entries.add(newEntry);
+            if (index > -1) {
+                entries.add(index, newEntry);
+            } else {
+                entries.add(newEntry);
+            }
         }
     }
 

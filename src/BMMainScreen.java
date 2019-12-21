@@ -71,7 +71,7 @@ public class BMMainScreen implements Initializable {
 //    public void createLibrary() {
 //
 //    }
-//
+
     public void addEntry() {
         confirmButton.setText("Add");
         entryTypeChoiceBox.getSelectionModel().select(0);
@@ -79,10 +79,16 @@ public class BMMainScreen implements Initializable {
         BMAddEntry bmAddEntry = new BMAddEntry(entryEditField, entryTypeChoiceBox);
 
         confirmButton.setOnAction(event -> {
-            bmAddEntry.addEntry(entries);
+            bmAddEntry.addEntry(currentRowIndex, entries);
+            resetRowNumbers();
             displayEntries("");
-            tableView.scrollTo(entries.size());
-            Map<Key, Object> addedEntry = entries.get(entries.size() - 1);
+            Map<Key, Object> addedEntry;
+            if (currentRowIndex < 0) {
+                tableView.scrollTo(entries.size());
+                addedEntry = entries.get(entries.size() - 1);
+            } else {
+                addedEntry = entries.get(currentRowIndex);
+            }
             deleteDuplicates(addedEntriesUndo, undoEventStack, addedEntry);
             addedEntriesUndo.add(addedEntry);
             undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(addedEntry, ADD_EVENT);}});
@@ -192,6 +198,8 @@ public class BMMainScreen implements Initializable {
                 tableView.getSelectionModel().clearSelection();
                 mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
                 aRowIsSelected = false;
+                currentRowIndex = -1;
+                currentRow = null;
             } else {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
                 currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
@@ -321,7 +329,7 @@ public class BMMainScreen implements Initializable {
                     if (!addedEntriesRedo.empty()) {
                         Map<Key, Object> entryToBeAdded = addedEntriesRedo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
-                        entries.add(entryToBeAdded);
+                        entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
                         deleteDuplicates(addedEntriesUndo, undoEventStack, entryToBeAdded);
                         addedEntriesUndo.add(entryToBeAdded);
                         undoEventStack.add(new HashMap<Map<Key, Object>, String>() {{put(entryToBeAdded, ADD_EVENT);}});
