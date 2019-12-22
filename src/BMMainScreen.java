@@ -22,7 +22,6 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.List;
 
-
 public class BMMainScreen {
     @FXML private TableView<Map> tableView;
     @FXML private TableColumn<Map, Integer> numberColumn;
@@ -46,7 +45,6 @@ public class BMMainScreen {
     private ArrayList<Map<Key, Object>> entries;
     private String searchKeyword = "";
     private Map currentRow;
-    private boolean keepLastDeletedEntryFields = false;
     private Stack<Map<Key, Object>> deletedEntriesUndo = new Stack<>();
     private Stack<Map<Key, Object>> deletedEntriesRedo = new Stack<>();
     private Stack<Map<Key, Object>> editedEntriesUndo = new Stack<>();
@@ -77,7 +75,6 @@ public class BMMainScreen {
             if (result.isPresent()) {
                 if (result.get() == ButtonType.NO) {
                     aChangeIsMade = false;
-                    keepLastDeletedEntryFields = false;
                     BMParser.library = null;
                     libraryName.setText("Library name: Not Named Yet");
 
@@ -91,7 +88,6 @@ public class BMMainScreen {
             }
         } else {
             BMParser.library = null;
-            keepLastDeletedEntryFields = false;
             libraryName.setText("Library name: Not Named Yet");
 
             clearUndoRedoStacks();
@@ -157,12 +153,10 @@ public class BMMainScreen {
         if (bmEditEntry == null) {
             bmEditEntry = new BMEditEntry(entryEditField, entryTypeChoiceBox);
         }
-        bmEditEntry.setSelectedRowToNull();
 
-        if (!keepLastDeletedEntryFields) {
-            bmAddEntry.resetEntryEditField();
-            bmEditEntry.typeChanged();
-        }
+        bmEditEntry.setSelectedRowToNull();
+        bmAddEntry.resetEntryEditField();
+        bmEditEntry.typeChanged();
 
         mainBorderPane.setBottom(entryEditField);
     }
@@ -170,7 +164,6 @@ public class BMMainScreen {
     @FXML
     private void deleteEntry() {
         if (aRowIsSelected && currentRow != null) {
-            keepLastDeletedEntryFields = true;
 
             entries.remove(currentRowIndex);
             aChangeIsMade = true;
@@ -205,7 +198,6 @@ public class BMMainScreen {
                     if (entries == null && tmpEntries != null) {
                         entries = tmpEntries;
                         clearUndoRedoStacks();
-                        keepLastDeletedEntryFields = false;
                     } else if (entries == null) {
                         Toast.showToast("File is corrupted");
                     }
@@ -229,7 +221,6 @@ public class BMMainScreen {
             if (entries == null && tmpEntries != null) {
                 entries = tmpEntries;
                 clearUndoRedoStacks();
-                keepLastDeletedEntryFields = false;
             } else if (entries == null) {
                 Toast.showToast("File is corrupted");
             }
@@ -295,6 +286,7 @@ public class BMMainScreen {
         BMMain.scene.getAccelerators().put(deleteKC, deleteRN);
         BMMain.scene.getAccelerators().put(undoKC, undoRN);
         BMMain.scene.getAccelerators().put(redoKC, redoRN);
+
         if (entries != null && entries.size() > 0) {
             currentRow = null;
             confirmButton.setText("Change");
@@ -305,7 +297,7 @@ public class BMMainScreen {
 
             if (!aRowIsSelected) {
                 currentRow = tableView.getSelectionModel().getSelectedItem();
-                currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+                currentRowIndex = (int) currentRow.get(new Key("rownumber")) - 1;
                 aRowIsSelected = true;
 
                 if (currentRow != null) {
@@ -321,7 +313,7 @@ public class BMMainScreen {
                     currentRow = null;
                 } else {
                     currentRow = tableView.getSelectionModel().getSelectedItem();
-                    currentRowIndex = tableView.getSelectionModel().getFocusedIndex();
+                    currentRowIndex = (int) currentRow.get(new Key("rownumber")) - 1;
 
                     if (mainBorderPane.getBottom() == null && currentRow != null) {
                         mainBorderPane.setBottom(entryEditField);
@@ -336,8 +328,6 @@ public class BMMainScreen {
     }
 
     private void fillEntryEditField(Set currentRowSet) {
-        keepLastDeletedEntryFields = false;
-
         Object[] currentRowArray = currentRowSet.toArray();
         int entryIndex = 0;
 
@@ -421,7 +411,7 @@ public class BMMainScreen {
                         Toast.showToast("Undo");
                         Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
-                        entries.add((int) entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
+                        entries.add( (int)entryToBeAdded.get(new Key("rownumber")) - 1, entryToBeAdded);
                         deleteDuplicates(deletedEntriesRedo, redoEventStack, entryToBeAdded);
                         deletedEntriesRedo.add(entryToBeAdded);
                         redoEventStack.add(new HashMap<Map<Key, Object>, String>() {{
@@ -600,7 +590,6 @@ public class BMMainScreen {
                     mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
                     clearUndoRedoStacks();
-                    keepLastDeletedEntryFields = false;
                     aChangeIsMade = false;
                     entries = null;
                     currentRow = null;
@@ -618,7 +607,6 @@ public class BMMainScreen {
             mainBorderPane.getChildren().remove(mainBorderPane.getBottom());
 
             clearUndoRedoStacks();
-            keepLastDeletedEntryFields = false;
             entries = null;
             currentRow = null;
             currentRowIndex = -1;
@@ -671,5 +659,7 @@ public class BMMainScreen {
         double screenWidth = dimensions.getWidth();
         mainBorderPane.setPrefWidth(screenWidth/1.5);
         mainBorderPane.setPrefHeight(screenHeight/2);
+
+        resetRowNumbers();
     }
 }
