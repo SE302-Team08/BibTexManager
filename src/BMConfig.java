@@ -11,9 +11,9 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 public class BMConfig {
-    private File propsFile;
-    private DocumentBuilder documentBuilder;
-    private Document propsDocument;
+    private static File propsFile;
+    private static DocumentBuilder documentBuilder;
+    private static Document propsDocument;
 
     public BMConfig() {
         final String dir = System.getProperty("user.dir");

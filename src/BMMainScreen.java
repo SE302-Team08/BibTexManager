@@ -204,6 +204,7 @@ public class BMMainScreen {
 
                     if (BMParser.library != null) {
                         libraryName.setText("Library name: " + BMParser.library.getName());
+                        clearUndoRedoStacks();
                     }
                     aRowIsSelected = false;
                     displayEntries("");
@@ -227,10 +228,12 @@ public class BMMainScreen {
 
             if (BMParser.library != null) {
                 libraryName.setText("Library name: " + BMParser.library.getName());
+                clearUndoRedoStacks();
             }
             aRowIsSelected = false;
             displayEntries("");
         }
+        resetRowNumbers();
     }
 
     @FXML
@@ -393,6 +396,7 @@ public class BMMainScreen {
             switch ((String) undoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
                     if (!addedEntriesUndo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Undo");
                         Map<Key, Object> entryToBeRemoved = addedEntriesUndo.pop();
                         entries.remove(entryToBeRemoved);
@@ -408,6 +412,7 @@ public class BMMainScreen {
 
                 case DELETE_EVENT:
                     if (!deletedEntriesUndo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Undo");
                         Map<Key, Object> entryToBeAdded = deletedEntriesUndo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
@@ -424,6 +429,7 @@ public class BMMainScreen {
 
                 case EDIT_EVENT:
                     if (!editedEntriesUndo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Undo");
                         Map<Key, Object> demodifiedEntry = editedEntriesUndo.pop();
                         bibTexKeyCheck(entries, demodifiedEntry);
@@ -454,6 +460,7 @@ public class BMMainScreen {
             switch ((String) redoEventStack.pop().values().toArray()[0]) {
                 case ADD_EVENT:
                     if (!addedEntriesRedo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Redo");
                         Map<Key, Object> entryToBeAdded = addedEntriesRedo.pop();
                         bibTexKeyCheck(entries, entryToBeAdded);
@@ -468,6 +475,7 @@ public class BMMainScreen {
 
                 case DELETE_EVENT:
                     if (!deletedEntriesRedo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Redo");
                         Map<Key, Object> entryToBeRemoved = deletedEntriesRedo.pop();
                         entries.remove(entryToBeRemoved);
@@ -483,6 +491,7 @@ public class BMMainScreen {
 
                 case EDIT_EVENT:
                     if (!editedEntriesRedo.empty()) {
+                        aChangeIsMade = true;
                         Toast.showToast("Redo");
                         Map<Key, Object> modifiedEntry = editedEntriesRedo.pop();
                         bibTexKeyCheck(entries, modifiedEntry);
@@ -612,6 +621,11 @@ public class BMMainScreen {
             currentRowIndex = -1;
             aRowIsSelected = false;
         }
+    }
+
+    @FXML
+    private void currentDirectory() {
+        Toast.showToast(System.getProperty("user.dir"));
     }
 
     @FXML
