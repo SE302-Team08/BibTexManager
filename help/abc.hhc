@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="BibTex Manager">
+		<param name="Local" value="BibTex Manager.htm">
+		<param name="Comment" value="sadasd">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Creating a New BibTex Library">
+			<param name="Local" value="Creating a New BibTex Library.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Opening BibTex Library">
+			<param name="Local" value="Opening Bibtex Library.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Opening a existing BibTex Library Directory">
+			<param name="Local" value="Opening Directory.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Entry Adding to BibTex Library">
+			<param name="Local" value="Entry Adding.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Save and Save As">
+			<param name="Local" value="Save and Save As.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Deleting Entry">
+			<param name="Local" value="Deleting.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Searching Entries">
+			<param name="Local" value="Search.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Undo and Redo">
+			<param name="Local" value="UndoRedo.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Sorting Entries">
+			<param name="Local" value="Sorting.htm">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>

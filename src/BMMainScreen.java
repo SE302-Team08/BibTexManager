@@ -17,6 +17,7 @@ import org.jbibtex.*;
 import org.w3c.dom.Document;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -624,8 +625,20 @@ public class BMMainScreen {
     }
 
     @FXML
-    private void currentDirectory() {
-        Toast.showToast(System.getProperty("user.dir"));
+    private void openHelpFile() {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            final String dir = System.getProperty("user.dir");
+            desktop.open(new File(dir + "\\help\\user_manual.chm"));
+        } catch (IOException | IllegalArgumentException e) {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                final String dir = System.getProperty("user.dir");
+                desktop.open(new File(dir + "\\help\\user_manual.exe"));
+            } catch (IOException exception) {
+                Toast.showToast("Could Not Open Help File");
+            }
+        }
     }
 
     @FXML
